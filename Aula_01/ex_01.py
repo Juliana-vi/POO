@@ -1,2 +1,1 @@
-print("Olá Gilbert")
-print("Bem vindo")
+print("Nome: Juliana Vianna de Araújo  Matrícula: 20241011110013")
