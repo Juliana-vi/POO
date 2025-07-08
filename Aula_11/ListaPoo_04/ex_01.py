@@ -46,8 +46,7 @@ class BingoUI:
     @staticmethod
     def Sortear(b):
         if b is None:
-            print("Nenhum jogo iniciado.")
-            return
+            raise ValueError("Nenhum jogo iniciado. Inicie um jogo antes de sortear.")
         bola = b.Sortear()
         if bola == -1:
             print("Todas as bolas já foram sorteadas")

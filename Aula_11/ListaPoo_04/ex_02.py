@@ -19,6 +19,8 @@ class Contato:
 
 class ContatoUI:
     __contatos = []
+    __next_id = 1
+    
     @classmethod    
     def main(cls):
         op = 0
@@ -35,12 +37,13 @@ class ContatoUI:
         return int(input("Escolha uma opção: "))
     @classmethod    
     def inserir(cls):
-        id = int(input("Informe o id do contato: "))
         nome = input("Informe o nome: ")
         email = input("Informe o e-mail: ")
         fone = input("Informe o fone: ")
-        c = Contato(id, nome, email, fone)
+        c = Contato(cls.__next_id, nome, email, fone)
         cls.__contatos.append(c)
+        cls.__next_id += 1
+        print("Contato inserido com sucesso!")
     @classmethod    
     def listar(cls):
         for c in cls.__contatos:
