@@ -10,5 +10,5 @@ class View:
     servico = Servico(id, descricao, valor)
     ServicoDAO.atualizar(servico)
   def servico_excluir(id):
-    servico = Servico(id, "", "", "")
+    servico = Servico(id, "", 0.0)
     ServicoDAO.excluir(servico)
