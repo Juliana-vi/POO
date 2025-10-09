@@ -14,8 +14,10 @@ def main():
         nome = st.text_input("Nome")
         especialidade = st.text_input("Especialidade")
         conselho = st.text_input("Conselho")
+        email = st.text_input("E-mail")
+        senha = st.text_input("Senha", type="password")
         if st.button("Inserir"):
-            View.profissional_inserir(nome, especialidade, conselho)
+            View.profissional_inserir(nome, especialidade, conselho, email, senha)
             st.success("Profissional inserido com sucesso!")
     with tab3:
         profissionais = View.profissional_listar()
@@ -24,8 +26,10 @@ def main():
             nome = st.text_input("Novo nome", op.get_nome())
             especialidade = st.text_input("Nova especialidade", op.get_especialidade())
             conselho = st.text_input("Novo conselho", op.get_conselho())
+            email = st.text_input("Novo e-mail", op.get_email())
+            senha = st.text_input("Nova senha", op.get_senha(), type="password")
             if st.button("Atualizar"):
-                View.profissional_atualizar(op.get_id(), nome, especialidade, conselho)
+                View.profissional_atualizar(op.get_id(), nome, especialidade, conselho, email, senha)
                 st.success("Profissional atualizado com sucesso!")
         else:
             st.info("Selecione um profissional para atualizar.")

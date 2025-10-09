@@ -35,8 +35,7 @@ class View:
   def cliente_autenticar(email, senha):
     for c in View.cliente_listar():
       if c.get_email() == email and c.get_senha() == senha:
-        return{"id": c.get_id(), "nome": c.get_nome()}
-
+        return {"id": c.get_id(), "nome": c.get_nome()}
     return None
 
   def servico_listar():
@@ -74,7 +73,7 @@ class View:
     return HorarioDAO.listar()
   
   def horario_atualizar(id, data, confirmado, id_cliente, id_servico, id_profissional):
-    c= Horario(id, data)
+    c = Horario(id, data)
     c.set_confirmado(confirmado)
     c.set_id_cliente(id_cliente)
     c.set_id_servico(id_servico)
@@ -87,19 +86,29 @@ class View:
 
   def profissional_listar():
     return ProfissionalDAO.listar()
-  def profissional_inserir(nome, especialidade, conselho):
-    profissional = Profissional(0, nome, especialidade, conselho)
+
+  def profissional_inserir(nome, especialidade, conselho, email, senha):
+    profissional = Profissional(0, nome, especialidade, conselho, email, senha)
     ProfissionalDAO.inserir(profissional)
-  def profissional_atualizar(id, nome, especialidade, conselho):
-    profissional = Profissional(id, nome, especialidade, conselho)
+
+  def profissional_atualizar(id, nome, especialidade, conselho, email, senha):
+    profissional = Profissional(id, nome, especialidade, conselho, email, senha)
     ProfissionalDAO.atualizar(profissional)
+
   def profissional_excluir(id):
-    profissional = Profissional(id, '', '', '')
+    profissional = Profissional(id, '', '', '', '', '')
     ProfissionalDAO.excluir(profissional)
+
   @staticmethod
   def profissional_listar_id(id):
     profissionais = View.profissional_listar()
     for profissional in profissionais:
       if profissional.get_id() == id:
         return profissional
+    return None
+
+  def profissional_autenticar(email, senha):
+    for p in View.profissional_listar():
+      if p.get_email() == email and p.get_senha() == senha:
+        return {"id": p.get_id(), "nome": p.get_nome()}
     return None
