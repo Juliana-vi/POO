@@ -40,6 +40,7 @@ class View:
         return {"id": c.get_id(), "nome": c.get_nome()}
     return None
 
+
   def servico_listar():
     r = ServicoDAO.listar()
     r.sort(key = lambda obj : obj.get_descricao())
@@ -97,8 +98,16 @@ class View:
       if h.get_data() >= agora and h.get_confirmado() == False and h.get_id_cliente() == None and h.get_id_profissional() == id_profissional: r.append(h)
       r.sort(key = lambda h : h.get_data())
       return r
+    
+  def horario_filtrar_profissional(id_profissional):
+    r = []
+    for h in View.horario_listar():
+      if h.get_id_profissional() == id_profissional:
+        r.append(h)
+    return r
 
   def profissional_listar():
+    r = ProfissionalDAO.listar()
     r.sort(key = lambda obj : obj.get_nome())
     return r
 
