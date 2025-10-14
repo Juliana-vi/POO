@@ -6,6 +6,7 @@ from templates.manterprofissionalUI import main as ManterProfissionalUI_main
 from templates.abrircontaUI import AbrirContaUI
 from templates.loginUI import LoginUI
 from templates.perfilclienteUI import PerfilClienteUI
+from templates.agendarservicoUI import AgendarServicoUI
 from views import View
 import streamlit as st
 
@@ -27,8 +28,9 @@ class IndexUI:
     if op == "Abrir Conta": AbrirContaUI.main()
 
   def menu_cliente():
-    op = st.sidebar.selectbox("Menu", ["Meus Dados"])
+    op = st.sidebar.selectbox("Menu", ["Meus Dados", "Agendar Serviço"])
     if op == "Meus Dados": PerfilClienteUI.main()
+    if op == "Agendar Serviço": AgendarServicoUI.main()
 
   def sair_do_sistema():
     if st.sidebar.button("Sair"):
