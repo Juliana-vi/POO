@@ -1,7 +1,7 @@
 import json
 
 class Profissional:
-    def __init__(self, id: int, nome: str, especialidade: str, conselho: str, email: str, senha: str):
+    def __init__(self, id, nome, especialidade, conselho, email, senha):
         self.set_id(id)
         self.set_nome(nome)
         self.set_especialidade(especialidade)
@@ -38,14 +38,7 @@ class Profissional:
 
     @staticmethod
     def from_json(dic):
-        return Profissional(
-            dic.get("id", 0),
-            dic.get("nome", ""),
-            dic.get("especialidade", ""),
-            dic.get("conselho", ""),
-            dic.get("email", ""),
-            dic.get("senha", "")
-        )
+        return Profissional(dic['id'], dic['nome'], dic['email'], dic['especialidade'], dic['conselho'], dic['senha'])
 
 class ProfissionalDAO:
     __profissionais = []
@@ -64,6 +57,12 @@ class ProfissionalDAO:
     def listar(cls):
         cls.abrir()
         return cls.__profissionais
+    
+    def listar_id(cls, id):
+        cls.abrir()
+        for obj in cls.__profissionais:
+            if obj.get_id() == id: return obj
+        return None
 
     @classmethod
     def atualizar(cls, profissional):
