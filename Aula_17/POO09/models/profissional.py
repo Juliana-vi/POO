@@ -9,19 +9,41 @@ class Profissional:
         self.set_email(email)
         self.set_senha(senha)
 
-    def get_id(self): return self.__id
-    def get_nome(self): return self.__nome
-    def get_especialidade(self): return self.__especialidade
-    def get_conselho(self): return self.__conselho
-    def get_email(self): return self.__email
-    def get_senha(self): return self.__senha
+    def get_id(self):
+        return self.__id
 
-    def set_id(self, id): self.__id = id
-    def set_nome(self, nome): self.__nome = nome
-    def set_especialidade(self, especialidade): self.__especialidade = especialidade
-    def set_conselho(self, conselho): self.__conselho = conselho
-    def set_email(self, email): self.__email = email
-    def set_senha(self, senha): self.__senha = senha
+    def get_nome(self):
+        return self.__nome
+
+    def get_especialidade(self):
+        return self.__especialidade
+
+    def get_conselho(self):
+        return self.__conselho
+
+    def get_email(self):
+        return self.__email
+
+    def get_senha(self):
+        return self.__senha
+
+    def set_id(self, id):
+        self.__id = id
+
+    def set_nome(self, nome):
+        self.__nome = nome
+
+    def set_especialidade(self, especialidade):
+        self.__especialidade = especialidade
+
+    def set_conselho(self, conselho):
+        self.__conselho = conselho
+
+    def set_email(self, email):
+        self.__email = email
+
+    def set_senha(self, senha):
+        self.__senha = senha
 
     def __str__(self):
         return f"{self.__id} - {self.__nome} - {self.__especialidade} - {self.__conselho} - {self.__email}"
@@ -38,14 +60,15 @@ class Profissional:
 
     @staticmethod
     def from_json(dic):
-        return Profissional(dic['id'], dic['nome'], dic['email'], dic['especialidade'], dic['conselho'], dic['senha'])
+        return Profissional(dic['id'], dic['nome'], dic.get('especialidade', ''), dic.get('conselho', ''), dic.get('email', ''), dic.get('senha', ''))
+
 
 class ProfissionalDAO:
     __profissionais = []
 
     @classmethod
     def inserir(cls, profissional):
-        cls.listar()
+        cls.abrir()
         id = 1
         if len(cls.__profissionais) > 0:
             id = cls.__profissionais[-1].get_id() + 1
@@ -57,16 +80,18 @@ class ProfissionalDAO:
     def listar(cls):
         cls.abrir()
         return cls.__profissionais
-    
+
+    @classmethod
     def listar_id(cls, id):
         cls.abrir()
         for obj in cls.__profissionais:
-            if obj.get_id() == id: return obj
+            if obj.get_id() == id:
+                return obj
         return None
 
     @classmethod
     def atualizar(cls, profissional):
-        cls.listar()
+        cls.abrir()
         for i, p in enumerate(cls.__profissionais):
             if p.get_id() == profissional.get_id():
                 cls.__profissionais[i] = profissional
@@ -75,14 +100,14 @@ class ProfissionalDAO:
 
     @classmethod
     def excluir(cls, profissional):
-        cls.listar()
+        cls.abrir()
         cls.__profissionais = [p for p in cls.__profissionais if p.get_id() != profissional.get_id()]
         cls.salvar()
 
     @classmethod
     def salvar(cls):
         with open("profissionais.json", "w") as f:
-            json.dump([p.to_json() for p in cls.__profissionais], f)
+            json.dump([p.to_json() for p in cls.__profissionais], f, ensure_ascii=False, indent=2)
 
     @classmethod
     def abrir(cls):
