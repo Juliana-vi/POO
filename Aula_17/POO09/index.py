@@ -12,7 +12,6 @@ from views import View
 
 class IndexUI:
 
-    # ---------- MENU DO ADMIN ----------
     @staticmethod
     def menu_admin():
         op = st.sidebar.selectbox("Menu do Administrador", [
@@ -27,7 +26,6 @@ class IndexUI:
         elif op == "Cadastro de Horários": ManterHorarioUI.main()
         elif op == "Cadastro de Profissionais": ManterProfissionalUI.main()
 
-    # ---------- MENU DO VISITANTE (NÃO LOGADO) ----------
     @staticmethod
     def menu_visitante():
         op = st.sidebar.selectbox("Menu", [
@@ -43,7 +41,6 @@ class IndexUI:
         elif op == "Abrir Conta":
             AbrirContaUI.main()
 
-    # ---------- MENU DO CLIENTE ----------
     @staticmethod
     def menu_cliente():
         op = st.sidebar.selectbox("Menu do Cliente", [
@@ -56,7 +53,6 @@ class IndexUI:
         elif op == "Agendar Serviço":
             AgendarServicoUI.main()
 
-    # ---------- MENU DO PROFISSIONAL ----------
     @staticmethod
     def menu_profissional():
         op = st.sidebar.selectbox("Menu do Profissional", [
@@ -66,7 +62,6 @@ class IndexUI:
         if op == "Meus Dados":
             PerfilProfissionalUI.main()
 
-    # ---------- BOTÃO SAIR ----------
     @staticmethod
     def sair_do_sistema():
         if st.sidebar.button("Sair"):
@@ -76,17 +71,14 @@ class IndexUI:
             st.success("Você saiu do sistema.")
             st.rerun()
 
-    # ---------- SIDEBAR PRINCIPAL ----------
     @staticmethod
     def sidebar():
         if "usuario_id" not in st.session_state:
             IndexUI.menu_visitante()
         else:
             st.sidebar.markdown(f"Bem-vindo(a), **{st.session_state['usuario_nome']}**!")
-
             tipo = st.session_state.get("usuario_tipo")
-
-            if st.session_state["usuario_nome"] == "admin":
+            if st.session_state.get("usuario_nome") == "admin":
                 IndexUI.menu_admin()
             elif tipo == "c":
                 IndexUI.menu_cliente()
@@ -98,13 +90,11 @@ class IndexUI:
                     if chave in st.session_state:
                         del st.session_state[chave]
                 st.rerun()
-
             IndexUI.sair_do_sistema()
 
-    # ---------- MAIN ----------
     @staticmethod
     def main():
-        View.cliente_criar_admin()
+        st.title("Sistema de Agendamentos")
         IndexUI.sidebar()
 
 if __name__ == "__main__":

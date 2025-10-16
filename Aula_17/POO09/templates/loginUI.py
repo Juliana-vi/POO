@@ -4,34 +4,35 @@ from views import View
 class LoginUI:
     @staticmethod
     def cliente():
-        st.header("Entrar como Cliente")
-        email = st.text_input("Informe o e-mail", key="email_cliente")
-        senha = st.text_input("Informe a senha", type="password", key="senha_cliente")
-
-        if st.button("Entrar como Cliente"):
-            c = View.cliente_autenticar(email, senha)
-            if c is None:
-                st.error("E-mail ou senha inválidos.")
-            else:
-                st.session_state["usuario_id"] = c["id"]
-                st.session_state["usuario_nome"] = c["nome"]
+        st.title("Login - Cliente")
+        email = st.text_input("Email")
+        senha = st.text_input("Senha", type="password")
+        if st.button("Entrar"):
+            # busca cliente por email
+            clientes = View.cliente_listar()
+            user = next((c for c in clientes if c.get_email() == email and c.get_senha() == senha), None)
+            if user:
+                st.session_state["usuario_id"] = user.get_id()
+                st.session_state["usuario_nome"] = user.get_nome()
                 st.session_state["usuario_tipo"] = "c"
-                st.success(f"Bem-vindo(a), {c['nome']}!")
+                st.success("Login realizado!")
                 st.rerun()
+            else:
+                st.error("Credenciais inválidas.")
 
     @staticmethod
     def profissional():
-        st.header("Entrar como Profissional")
-        email = st.text_input("Informe o e-mail", key="email_profissional")
-        senha = st.text_input("Informe a senha", type="password", key="senha_profissional")
-
+        st.title("Login - Profissional")
+        email = st.text_input("Email", key="p_email")
+        senha = st.text_input("Senha", type="password", key="p_senha")
         if st.button("Entrar como Profissional"):
-            p = View.profissional_autenticar(email, senha)
-            if p is None:
-                st.error("E-mail ou senha inválidos.")
-            else:
-                st.session_state["usuario_id"] = p["id"]
-                st.session_state["usuario_nome"] = p["nome"]
+            profs = View.profissional_listar()
+            user = next((p for p in profs if p.get_email() == email and p.get_senha() == senha), None)
+            if user:
+                st.session_state["usuario_id"] = user.get_id()
+                st.session_state["usuario_nome"] = user.get_nome()
                 st.session_state["usuario_tipo"] = "p"
-                st.success(f"Bem-vindo(a), {p['nome']}!")
+                st.success("Login realizado!")
                 st.rerun()
+            else:
+                st.error("Credenciais inválidas.")

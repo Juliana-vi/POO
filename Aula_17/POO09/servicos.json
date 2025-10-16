@@ -1,1 +1,12 @@
-[{"id": 2, "descricao": "Estoque de alimentos", "valor": 550.02}, {"id": 3, "descricao": "montagem de pe\u00e7as", "valor": 600.0}]
+[
+  {
+    "id": 3,
+    "descricao": "montagem de peças",
+    "valor": 600.0
+  },
+  {
+    "id": 4,
+    "descricao": "psicologo",
+    "valor": 90000.0
+  }
+]

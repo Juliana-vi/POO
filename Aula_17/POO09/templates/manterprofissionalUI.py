@@ -4,7 +4,7 @@ from views import View
 class ManterProfissionalUI:
     @staticmethod
     def main():
-        st.title("👩‍⚕️ Cadastro de Profissionais")
+        st.title("Cadastro de Profissionais")
         tab1, tab2, tab3, tab4 = st.tabs(["Listar", "Inserir", "Atualizar", "Excluir"])
 
         with tab1:

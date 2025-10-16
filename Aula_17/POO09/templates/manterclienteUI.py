@@ -6,7 +6,6 @@ class ManterClienteUI:
     def main():
         st.title("Cadastro de Clientes")
         tab1, tab2, tab3, tab4 = st.tabs(["Listar", "Inserir", "Atualizar", "Excluir"])
-
         with tab1:
             ManterClienteUI.listar()
         with tab2:
@@ -20,27 +19,24 @@ class ManterClienteUI:
     def listar():
         clientes = View.cliente_listar()
         if not clientes:
-            st.info("Nenhum cliente cadastrado ainda.")
-        else:
-            for c in clientes:
-                st.write(
-                    f"**ID:** {c.get_id()} | **Nome:** {c.get_nome()} | **E-mail:** {c.get_email()} | **Telefone:** {c.get_fone()}"
-                )
+            st.info("Nenhum cliente cadastrado.")
+            return
+        for c in clientes:
+            st.markdown(f"**ID:** {c.get_id()} | **Nome:** {c.get_nome()} | **Email:** {c.get_email()}")
 
     @staticmethod
     def inserir():
-        nome = st.text_input("Nome")
-        email = st.text_input("E-mail")
-        fone = st.text_input("Telefone")
-        senha = st.text_input("Senha", type="password")
-
+        nome = st.text_input("Nome", key="cli_nome")
+        email = st.text_input("Email", key="cli_email")
+        fone = st.text_input("Fone", key="cli_fone")
+        senha = st.text_input("Senha", type="password", key="cli_senha")
         if st.button("Inserir Cliente"):
-            if nome and email and fone and senha:
-                View.cliente_inserir(nome, email, fone, senha)
-                st.success("Cliente inserido com sucesso!")
-                st.rerun()
+            if not nome or not email:
+                st.error("Nome e email obrigatórios.")
             else:
-                st.warning("Preencha todos os campos antes de inserir.")
+                View.cliente_inserir(nome, email, fone, senha)
+                st.success("Cliente inserido.")
+                st.rerun()
 
     @staticmethod
     def atualizar():
@@ -48,19 +44,16 @@ class ManterClienteUI:
         if not clientes:
             st.warning("Nenhum cliente cadastrado.")
             return
-
-        opcao = st.selectbox("Selecione o cliente:", [f"{c.get_id()} - {c.get_nome()}" for c in clientes])
-        id = int(opcao.split(" - ")[0])
-        c = View.cliente_listar_id(id)
-
-        nome = st.text_input("Novo nome", value=c.get_nome())
-        email = st.text_input("Novo e-mail", value=c.get_email())
-        fone = st.text_input("Novo telefone", value=c.get_fone())
-        senha = st.text_input("Nova senha", value=c.get_senha(), type="password")
-
+        opcao = st.selectbox("Selecione cliente", [f"{c.get_id()} - {c.get_nome()}" for c in clientes])
+        id_sel = int(opcao.split(" - ")[0])
+        c = View.cliente_listar_id(id_sel)
+        nome = st.text_input("Nome", value=c.get_nome())
+        email = st.text_input("Email", value=c.get_email())
+        fone = st.text_input("Fone", value=c.get_fone())
+        senha = st.text_input("Senha (deixe em branco para manter)", type="password")
         if st.button("Atualizar Cliente"):
-            View.cliente_atualizar(id, nome, email, fone, senha)
-            st.success("Cliente atualizado com sucesso!")
+            View.cliente_atualizar(id_sel, nome, email, fone, senha if senha else c.get_senha())
+            st.success("Cliente atualizado.")
             st.rerun()
 
     @staticmethod
@@ -69,11 +62,9 @@ class ManterClienteUI:
         if not clientes:
             st.warning("Nenhum cliente cadastrado.")
             return
-
-        opcao = st.selectbox("Selecione o cliente para excluir:", [f"{c.get_id()} - {c.get_nome()}" for c in clientes])
-        id = int(opcao.split(" - ")[0])
-
+        opcao = st.selectbox("Selecione cliente para excluir", [f"{c.get_id()} - {c.get_nome()}" for c in clientes])
+        id_sel = int(opcao.split(" - ")[0])
         if st.button("Excluir Cliente"):
-            View.cliente_excluir(id)
-            st.success("Cliente excluído com sucesso!")
+            View.cliente_excluir(id_sel)
+            st.success("Cliente excluído.")
             st.rerun()

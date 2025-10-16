@@ -19,15 +19,30 @@ class ManterHorarioUI:
 
     @staticmethod
     def listar():
-        horarios = View.horario_listar()
-        if not horarios:
-            st.info("Nenhum horário cadastrado ainda.")
-        else:
-            for h in horarios:
-                st.write(
-                    f"**ID:** {h.get_id()} | **Data:** {h.get_data()}"
-                    f"**Profissional:** {h.get_profissional().get_nome()} | **Cliente:** {h.get_cliente().get_nome() if h.get_cliente() else '—'}"
-                )
+      st.title("Lista de Horários")
+      horarios = View.horario_listar()
+
+      if not horarios:
+        st.info("Nenhum horário cadastrado ainda.")
+      else:
+        for h in horarios:
+            st.write(f"**ID:** {h.get_id()} | **Data:** {h.get_data()}")
+
+            p = View.profissional_listar_id(h.get_id_profissional())
+            c = View.cliente_listar_id(h.get_id_cliente())
+
+            profissional_nome = p.get_nome() if p else "—"
+            cliente_nome = c.get_nome() if c else "—"
+
+            st.markdown(
+                f"**Profissional:** {profissional_nome} | **Cliente:** {cliente_nome}"
+            )
+
+            st.markdown(
+                f"**Confirmado:** {'Sim' if h.get_confirmado() else 'Não'}"
+            )
+
+            st.divider()
 
     @staticmethod
     def inserir():
@@ -62,12 +77,11 @@ class ManterHorarioUI:
             st.warning("Nenhum horário cadastrado.")
             return
 
-        opcao = st.selectbox("Selecione o horário:", [f"{h.get_id()} - {h.get_data()} {h.get_hora()}" for h in horarios])
+        opcao = st.selectbox("Selecione o horário:", [f"{h.get_id()} - {h.get_data()}" for h in horarios])
         id = int(opcao.split(" - ")[0])
         h = View.horario_listar_id(id)
 
-        data = st.date_input("Nova data", value=datetime.strptime(h.get_data(), "%Y-%m-%d"))
-        hora = st.time_input("Nova hora", value=datetime.strptime(h.get_hora(), "%H:%M").time())
+        data = st.date_input("Nova data", value=h.get_data().date())
 
         profissionais = View.profissional_listar()
         clientes = View.cliente_listar()
