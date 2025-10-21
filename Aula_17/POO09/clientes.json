@@ -1,1 +1,149 @@
-[{"id": 2, "nome": "julia", "email": "julia@gmail.com", "fone": "888888334", "senha": ""}, {"id": 3, "nome": "paulo", "email": "paulo@gmail.com", "fone": "7", "senha": ""}, {"id": 4, "nome": "admin", "email": "admin", "fone": "fone", "senha": "1234"}, {"id": 5, "nome": "<bound method Cliente.get_nome of <models.cliente.Cliente object at 0x7258e3c4cf20>>", "email": "juliana@gmail.com", "fone": "99999", "senha": "euu"}, {"id": 6, "nome": "<bound method Cliente.get_nome of <models.cliente.Cliente object at 0x76fc6ef53fe0>>", "email": "juliana@gmail.com", "fone": "99", "senha": "velma"}, {"id": 7, "nome": "Juliana Vianna", "email": "juliana@gmail.com", "fone": "juliana@gmail.com", "senha": "1234"}, {"id": 8, "nome": "Juliana Vianna", "email": "juliana@gmail.com", "fone": "99", "senha": "eu"}, {"id": 9, "nome": "Julianaa", "email": "julianaa@gmail.com", "fone": "999", "senha": "euu"}, {"id": 10, "nome": "Julianaa", "email": "julianaa@gmail.com", "fone": "9999", "senha": "euu"}, {"id": 11, "nome": "Juliana Vianna", "email": "juliana@gmail.com", "fone": "99", "senha": "eu"}, {"id": 12, "nome": "ana", "email": "ana@gmail.com", "fone": "77", "senha": "vc"}, {"id": 13, "nome": "ana", "email": "ana@gmail.com", "fone": "77", "senha": "vc"}, {"id": 14, "nome": "admin", "email": "admin@gmail.com", "fone": "99", "senha": "1234"}, {"id": 15, "nome": "juli", "email": "juli@", "fone": "2", "senha": "22"}, {"id": 16, "nome": "gilbert", "email": "gilbert@gmail.com", "fone": "222", "senha": "g"}, {"id": 17, "nome": "gilbert", "email": "gilbert@gmail.com", "fone": "222", "senha": "g"}, {"id": 18, "nome": "ana", "email": "ana@gmail.com", "fone": "88", "senha": "aa"}, {"id": 19, "nome": "Juliana Vianna", "email": "juliana@gmail.com", "fone": "9999", "senha": "euu"}, {"id": 21, "nome": "luiza", "email": "luiza@gmail.com", "fone": "667", "senha": "lu"}]
+[
+  {
+    "id": 2,
+    "nome": "julia",
+    "email": "julia@gmail.com",
+    "fone": "888888334",
+    "senha": ""
+  },
+  {
+    "id": 3,
+    "nome": "paulo",
+    "email": "paulo@gmail.com",
+    "fone": "7",
+    "senha": ""
+  },
+  {
+    "id": 4,
+    "nome": "admin",
+    "email": "admin",
+    "fone": "fone",
+    "senha": "1234"
+  },
+  {
+    "id": 5,
+    "nome": "<bound method Cliente.get_nome of <models.cliente.Cliente object at 0x7258e3c4cf20>>",
+    "email": "juliana@gmail.com",
+    "fone": "99999",
+    "senha": "euu"
+  },
+  {
+    "id": 6,
+    "nome": "<bound method Cliente.get_nome of <models.cliente.Cliente object at 0x76fc6ef53fe0>>",
+    "email": "juliana@gmail.com",
+    "fone": "99",
+    "senha": "velma"
+  },
+  {
+    "id": 7,
+    "nome": "Juliana Vianna",
+    "email": "juliana@gmail.com",
+    "fone": "juliana@gmail.com",
+    "senha": "1234"
+  },
+  {
+    "id": 8,
+    "nome": "Juliana Vianna",
+    "email": "juliana@gmail.com",
+    "fone": "99",
+    "senha": "eu"
+  },
+  {
+    "id": 9,
+    "nome": "Julianaa",
+    "email": "julianaa@gmail.com",
+    "fone": "999",
+    "senha": "euu"
+  },
+  {
+    "id": 10,
+    "nome": "Julianaa",
+    "email": "julianaa@gmail.com",
+    "fone": "9999",
+    "senha": "euu"
+  },
+  {
+    "id": 11,
+    "nome": "Juliana Vianna",
+    "email": "juliana@gmail.com",
+    "fone": "99",
+    "senha": "eu"
+  },
+  {
+    "id": 12,
+    "nome": "ana",
+    "email": "ana@gmail.com",
+    "fone": "77",
+    "senha": "vc"
+  },
+  {
+    "id": 13,
+    "nome": "ana",
+    "email": "ana@gmail.com",
+    "fone": "77",
+    "senha": "vc"
+  },
+  {
+    "id": 14,
+    "nome": "admin",
+    "email": "admin@gmail.com",
+    "fone": "99",
+    "senha": "1234"
+  },
+  {
+    "id": 15,
+    "nome": "juli",
+    "email": "juli@",
+    "fone": "2",
+    "senha": "22"
+  },
+  {
+    "id": 16,
+    "nome": "gilbert",
+    "email": "gilbert@gmail.com",
+    "fone": "222",
+    "senha": "g"
+  },
+  {
+    "id": 17,
+    "nome": "gilbert",
+    "email": "gilbert@gmail.com",
+    "fone": "222",
+    "senha": "g"
+  },
+  {
+    "id": 18,
+    "nome": "ana",
+    "email": "ana@gmail.com",
+    "fone": "88",
+    "senha": "aa"
+  },
+  {
+    "id": 19,
+    "nome": "Juliana Vianna",
+    "email": "juliana@gmail.com",
+    "fone": "9999",
+    "senha": "euu"
+  },
+  {
+    "id": 21,
+    "nome": "luiza",
+    "email": "luiza@gmail.com",
+    "fone": "667",
+    "senha": "lu"
+  },
+  {
+    "id": 22,
+    "nome": "silvia",
+    "email": "silvia@gmail.com",
+    "fone": "2",
+    "senha": "silvia"
+  },
+  {
+    "id": 23,
+    "nome": "silvia",
+    "email": "silvia@gmail.com",
+    "fone": "2",
+    "senha": "silvia"
+  }
+]

@@ -1,12 +1,12 @@
 [
   {
-    "id": 3,
-    "descricao": "montagem de peças",
-    "valor": 600.0
+    "id": 5,
+    "descricao": "eletricista",
+    "valor": 950.0
   },
   {
     "id": 4,
     "descricao": "psicologo",
-    "valor": 90000.0
+    "valor": 2000.0
   }
 ]

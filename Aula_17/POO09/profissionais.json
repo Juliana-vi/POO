@@ -3,7 +3,7 @@
     "id": 2,
     "nome": "elisa",
     "especialidade": "nutrologa",
-    "conselho": "nutrição",
+    "conselho": "nutri\u00e7\u00e3o",
     "email": "elisa@gmail.com",
     "senha": "elisa"
   },
@@ -14,5 +14,13 @@
     "conselho": "design",
     "email": "dani@gmail.com",
     "senha": "da"
+  },
+  {
+    "id": 4,
+    "nome": "Ana Fl\u00e1via",
+    "especialidade": "Professora",
+    "conselho": "Educa\u00e7\u00e3o",
+    "email": "anaflavia@gmail.com",
+    "senha": "ana"
   }
 ]
