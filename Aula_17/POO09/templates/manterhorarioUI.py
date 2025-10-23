@@ -17,33 +17,30 @@ class ManterHorarioUI:
         with tab4:
             ManterHorarioUI.excluir()
 
+    # ---------------- LISTAR ----------------
     @staticmethod
     def listar():
-      st.title("Lista de Horários")
-      horarios = View.horario_listar()
+        horarios = View.horario_listar()
+        if not horarios:
+            st.info("Nenhum horário cadastrado ainda.")
+            return
 
-      if not horarios:
-        st.info("Nenhum horário cadastrado ainda.")
-      else:
+        dados = []
         for h in horarios:
-            st.write(f"**ID:** {h.get_id()} | **Data:** {h.get_data()}")
+            profissional = View.profissional_listar_id(h.get_id_profissional())
+            cliente = View.cliente_listar_id(h.get_id_cliente())
 
-            p = View.profissional_listar_id(h.get_id_profissional())
-            c = View.cliente_listar_id(h.get_id_cliente())
+            dados.append({
+                "ID": h.get_id(),
+                "Data": h.get_data(),
+                "Confirmado": "Sim" if h.get_confirmado() else "Não",
+                "Profissional": profissional.get_nome() if profissional else "—",
+                "Cliente": cliente.get_nome() if cliente else "—"
+            })
 
-            profissional_nome = p.get_nome() if p else "—"
-            cliente_nome = c.get_nome() if c else "—"
+        st.dataframe(dados, use_container_width=True)
 
-            st.markdown(
-                f"**Profissional:** {profissional_nome} | **Cliente:** {cliente_nome}"
-            )
-
-            st.markdown(
-                f"**Confirmado:** {'Sim' if h.get_confirmado() else 'Não'}"
-            )
-
-            st.divider()
-
+    # ---------------- INSERIR ----------------
     @staticmethod
     def inserir():
         profissionais = View.profissional_listar()
@@ -66,10 +63,12 @@ class ManterHorarioUI:
                 id_cliente = int(cliente_opcional.split(" - ")[0])
 
         if st.button("Inserir Horário"):
-            View.horario_inserir(data.strftime("%Y-%m-%d"), hora.strftime("%H:%M"), id_prof, id_cliente)
+            data_hora = datetime.combine(data, hora)
+            View.horario_inserir(data_hora, False, id_cliente, None, id_prof)
             st.success("Horário inserido com sucesso!")
             st.rerun()
 
+    # ---------------- ATUALIZAR ----------------
     @staticmethod
     def atualizar():
         horarios = View.horario_listar()
@@ -82,22 +81,47 @@ class ManterHorarioUI:
         h = View.horario_listar_id(id)
 
         data = st.date_input("Nova data", value=h.get_data().date())
+        hora = st.time_input("Nova hora", value=h.get_data().time())
 
         profissionais = View.profissional_listar()
         clientes = View.cliente_listar()
 
-        profissional = st.selectbox("Novo profissional", [f"{p.get_id()} - {p.get_nome()}" for p in profissionais], 
-                                    index=[p.get_id() for p in profissionais].index(h.get_profissional().get_id()))
+        # ⚙️ Correção robusta — evita erro se id_profissional for 0 ou inexistente
+        prof_id_atual = h.get_id_profissional()
+        ids_profissionais = [p.get_id() for p in profissionais]
+        if prof_id_atual in ids_profissionais:
+            idx_prof = ids_profissionais.index(prof_id_atual)
+        else:
+            idx_prof = 0
 
-        cliente_opcional = st.selectbox("Novo cliente (opcional)", ["— Nenhum —"] + [f"{c.get_id()} - {c.get_nome()}" for c in clientes])
+        profissional = st.selectbox(
+            "Novo profissional",
+            [f"{p.get_id()} - {p.get_nome()}" for p in profissionais],
+            index=idx_prof
+        )
+
+        cliente_opcional = st.selectbox(
+            "Novo cliente (opcional)",
+            ["— Nenhum —"] + [f"{c.get_id()} - {c.get_nome()}" for c in clientes]
+        )
+
         id_prof = int(profissional.split(" - ")[0])
         id_cliente = None if cliente_opcional == "— Nenhum —" else int(cliente_opcional.split(" - ")[0])
 
         if st.button("Atualizar Horário"):
-            View.horario_atualizar(id, data.strftime("%Y-%m-%d"), hora.strftime("%H:%M"), id_prof, id_cliente)
+            nova_data = datetime.combine(data, hora)
+            View.horario_atualizar(
+                id, 
+                nova_data, 
+                h.get_confirmado(), 
+                id_cliente, 
+                h.get_id_servico(), 
+                id_prof
+            )
             st.success("Horário atualizado com sucesso!")
             st.rerun()
 
+    # ---------------- EXCLUIR ----------------
     @staticmethod
     def excluir():
         horarios = View.horario_listar()
@@ -105,7 +129,7 @@ class ManterHorarioUI:
             st.warning("Nenhum horário cadastrado.")
             return
 
-        opcao = st.selectbox("Selecione o horário para excluir:", [f"{h.get_id()} - {h.get_data()} {h.get_hora()}" for h in horarios])
+        opcao = st.selectbox("Selecione o horário para excluir:", [f"{h.get_id()} - {h.get_data()}" for h in horarios])
         id = int(opcao.split(" - ")[0])
 
         if st.button("Excluir Horário"):

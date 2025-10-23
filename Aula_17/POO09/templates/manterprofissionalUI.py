@@ -21,12 +21,17 @@ class ManterProfissionalUI:
         profissionais = View.profissional_listar()
         if not profissionais:
             st.info("Nenhum profissional cadastrado ainda.")
-        else:
-            for p in profissionais:
-                st.write(
-                    f"**ID:** {p.get_id()} | **Nome:** {p.get_nome()} | **Especialidade:** {p.get_especialidade()} | "
-                    f"**Conselho:** {p.get_conselho()} | **E-mail:** {p.get_email()}"
-                )
+            return
+
+        dados = [{
+            "ID": p.get_id(),
+            "Nome": p.get_nome(),
+            "Especialidade": p.get_especialidade(),
+            "Conselho": p.get_conselho(),
+            "Email": p.get_email()
+        } for p in profissionais]
+
+        st.dataframe(dados, use_container_width=True)
 
     @staticmethod
     def inserir():

@@ -21,9 +21,16 @@ class ManterServicoUI:
         servicos = View.servico_listar()
         if not servicos:
             st.info("Nenhum serviço cadastrado ainda.")
-        else:
-            for s in servicos:
-                st.write(f"**ID:** {s.get_id()} | **Descrição:** {s.get_descricao()} | **Valor:** R$ {s.get_valor():.2f}")
+            return
+
+        dados = [{
+            "ID": s.get_id(),
+            "Descrição": s.get_descricao(),
+            "Valor (R$)": f"{s.get_valor():.2f}"
+        } for s in servicos]
+
+        st.dataframe(dados, use_container_width=True)
+
 
     @staticmethod
     def inserir():

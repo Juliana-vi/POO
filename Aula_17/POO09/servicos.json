@@ -1,12 +1,12 @@
 [
   {
-    "id": 5,
-    "descricao": "eletricista",
-    "valor": 950.0
-  },
-  {
     "id": 4,
     "descricao": "psicologo",
     "valor": 2000.0
+  },
+  {
+    "id": 5,
+    "descricao": "consultor",
+    "valor": 4000.0200000000004
   }
 ]

@@ -14,17 +14,45 @@ class IndexUI:
 
     @staticmethod
     def menu_admin():
-        op = st.sidebar.selectbox("Menu do Administrador", [
+        st.sidebar.markdown("Menu do Administrador")
+
+        op = st.sidebar.selectbox("Selecione uma opção:", [
             "Cadastro de Clientes",
             "Cadastro de Serviços",
             "Cadastro de Horários",
             "Cadastro de Profissionais"
         ])
 
-        if op == "Cadastro de Clientes": ManterClienteUI.main()
-        elif op == "Cadastro de Serviços": ManterServicoUI.main()
-        elif op == "Cadastro de Horários": ManterHorarioUI.main()
-        elif op == "Cadastro de Profissionais": ManterProfissionalUI.main()
+        if op == "Cadastro de Clientes":
+            ManterClienteUI.main()
+        elif op == "Cadastro de Serviços":
+            ManterServicoUI.main()
+        elif op == "Cadastro de Horários":
+            ManterHorarioUI.main()
+        elif op == "Cadastro de Profissionais":
+            ManterProfissionalUI.main()
+
+        # ⚙️ Adiciona botão separado para alterar senha
+        st.sidebar.divider()
+        if st.sidebar.button("🔐 Alterar Senha"):
+            IndexUI.alterar_senha_admin()
+
+    @staticmethod
+    def alterar_senha_admin():
+      st.subheader("🔐 Alterar Senha do Administrador")
+      st.info("O e-mail do administrador não pode ser alterado.")
+
+      id_admin = st.session_state["usuario_id"]
+
+      nova = st.text_input("Digite a nova senha", type="password")
+
+      if st.button("Salvar Nova Senha"):
+         if View.alterar_senha(id_admin, nova, "a"):  # 'a' identifica que é admin
+            st.success("Senha alterada com sucesso!")
+         else:
+            st.error("Erro ao alterar senha.")
+
+
 
     @staticmethod
     def menu_visitante():

@@ -105,3 +105,13 @@ class ClienteDAO:
                 json.dump([o.to_json() for o in cls.__objetos], f, indent=2)
         except Exception as e:
             print("Erro ao salvar clientes:", e)
+
+    @staticmethod
+    def alterar_senha(id_cliente, senha_antiga, nova_senha):
+        lista = Cliente.abrir()
+        for c in lista:
+            if c._Cliente__id == id_cliente and c._Cliente__senha == senha_antiga:
+                c._Cliente__senha = nova_senha
+                Cliente.salvar(lista)
+                return True
+        return False

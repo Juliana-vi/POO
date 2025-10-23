@@ -8,13 +8,11 @@ class LoginUI:
         email = st.text_input("Email")
         senha = st.text_input("Senha", type="password")
         if st.button("Entrar"):
-            # busca cliente por email
-            clientes = View.cliente_listar()
-            user = next((c for c in clientes if c.get_email() == email and c.get_senha() == senha), None)
+            user = View.cliente_autenticar(email, senha)
             if user:
-                st.session_state["usuario_id"] = user.get_id()
-                st.session_state["usuario_nome"] = user.get_nome()
-                st.session_state["usuario_tipo"] = "c"
+                st.session_state["usuario_id"] = user["id"]
+                st.session_state["usuario_nome"] = user["nome"]
+                st.session_state["usuario_tipo"] = user.get("tipo", "c")
                 st.success("Login realizado!")
                 st.rerun()
             else:

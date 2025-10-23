@@ -34,7 +34,7 @@ class AgendarServicoUI:
 
         horarios = [
             h for h in View.profissional_visualizar_agenda(id_profissional)
-            if h.get_id_cliente() is None
+            if h.get_id_cliente() in (None, 0)
         ]
 
         if not horarios:
@@ -49,18 +49,21 @@ class AgendarServicoUI:
 
         if st.button("Confirmar Agendamento"):
             h = View.horario_listar_id(id_horario)
-            if h is None:
+            if not h:
                 st.error("Erro ao localizar horário.")
                 return
 
             h.set_id_cliente(id_cliente)
             h.set_id_servico(id_servico)
+            h.set_confirmado(False)
+
             View.horario_atualizar(
-            h.get_id(),
-            h.get_data(),
-            True,  # confirmado = True
-            st.session_state["usuario_id"],  # id_cliente logado
-            h.get_id_servico(),
-            h.get_id_profissional()
+                h.get_id(),
+                h.get_data(),
+                h.get_confirmado(),
+                h.get_id_cliente(),
+                h.get_id_servico(),
+                h.get_id_profissional()
             )
+
             st.success(f"Serviço '{servico.get_descricao()}' agendado com {profissional.get_nome()} em {h.get_data()}")

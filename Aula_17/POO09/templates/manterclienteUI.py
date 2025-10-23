@@ -21,8 +21,15 @@ class ManterClienteUI:
         if not clientes:
             st.info("Nenhum cliente cadastrado.")
             return
-        for c in clientes:
-            st.markdown(f"**ID:** {c.get_id()} | **Nome:** {c.get_nome()} | **Email:** {c.get_email()}")
+
+        dados = [{
+            "ID": c.get_id(),
+            "Nome": c.get_nome(),
+            "Email": c.get_email(),
+            "Telefone": c.get_fone()
+        } for c in clientes]
+
+        st.dataframe(dados, use_container_width=True)
 
     @staticmethod
     def inserir():

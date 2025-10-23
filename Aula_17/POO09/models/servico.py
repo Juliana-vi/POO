@@ -43,6 +43,15 @@ class ServicoDAO:
         cls.abrir()
         return cls.__objetos.copy()
 
+    @staticmethod
+    def listar_por_profissional(id_prof):
+        lista = Servico.abrir()
+        return [s for s in lista if s._Servico__id_profissional == id_prof]
+
+    @staticmethod
+    def ordenar_por_nome(lista, reverso=False):
+        return sorted(lista, key=lambda s: s._Servico__nome.lower(), reverse=reverso)
+
     @classmethod
     def listar_id(cls, servico_id):
         cls.abrir()
@@ -86,3 +95,37 @@ class ServicoDAO:
                 json.dump([o.to_json() for o in cls.__objetos], f, indent=2)
         except Exception as e:
             print("Erro ao salvar servicos:", e)
+
+    # Lista os agendamentos do cliente logado
+    @staticmethod
+    def listar_agenda_cliente(id_cliente):
+        lista = AgendarServico.abrir()
+        return [a for a in lista if a._AgendarServico__id_cliente == id_cliente]
+
+    # Lista os agendamentos do profissional logado
+    @staticmethod
+    def listar_agenda_profissional(id_prof):
+        lista = AgendarServico.abrir()
+        return [a for a in lista if a._AgendarServico__id_profissional == id_prof]
+
+    # Confirma o serviço (usado pelo profissional)
+    @staticmethod
+    def confirmar_servico(id_agendamento):
+        lista = AgendarServico.abrir()
+        for a in lista:
+            if a._AgendarServico__id == id_agendamento:
+                a._AgendarServico__confirmado = True
+                AgendarServico.salvar(lista)
+                return True
+        return False
+
+    # Filtra agendamentos por data
+    @staticmethod
+    def filtrar_por_data(lista, data):
+        return [a for a in lista if a._AgendarServico__data == data]
+
+    # Ordena por data (pode ser crescente ou decrescente)
+    @staticmethod
+    def ordenar_por_data(lista, reverso=False):
+        from datetime import datetime
+        return sorted(lista, key=lambda a: datetime.strptime(a._AgendarServico__data, "%Y-%m-%d"), reverse=reverso)

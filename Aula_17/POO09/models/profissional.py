@@ -111,3 +111,13 @@ class ProfissionalDAO:
                 json.dump([o.to_json() for o in cls.__objetos], f, indent=2)
         except Exception as e:
             print("Erro ao salvar profissionais:", e)
+
+    @staticmethod
+    def alterar_senha(id_prof, senha_antiga, nova_senha):
+        lista = Profissional.abrir()
+        for p in lista:
+            if p._Profissional__id == id_prof and p._Profissional__senha == senha_antiga:
+                p._Profissional__senha = nova_senha
+                Profissional.salvar(lista)
+                return True
+        return False

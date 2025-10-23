@@ -1,5 +1,6 @@
 import streamlit as st
 from views import View
+from datetime import date
 
 class PerfilClienteUI:
     @staticmethod
@@ -15,26 +16,40 @@ class PerfilClienteUI:
             "Alterar Senha"
         ])
 
+        # --- Dados Pessoais ---
         if menu == "Meus Dados":
             c = View.cliente_listar_id(id_cliente)
             st.write(f"**Nome:** {c.get_nome()}")
             st.write(f"**E-mail:** {c.get_email()}")
             st.write(f"**Telefone:** {c.get_fone()}")
 
-        elif menu == "Meus Serviços":
-            servicos = View.cliente_visualizar_servicos(id_cliente)
-            if servicos:
-                for s in servicos:
-                    data = s.get_data()
-                    profissional = View.profissional_listar_id(s.get_id_profissional())
-                    nome_prof = profissional.get_nome() if profissional else "(desconhecido)"
-                    status = "Confirmado" if s.get_confirmado() else "Pendente"
-                    st.write(f"- {data} com {nome_prof} — {status}")
-            else:
-                st.info("Nenhum serviço agendado ainda.")
+        if menu == "Meus Serviços":
+            st.subheader("📋 Meus Serviços")
 
+            horarios = View.filtrar_horarios_cliente(id_cliente)
+
+            if not horarios:
+                st.info("Nenhum serviço agendado encontrado.")
+            else:
+                tabela = []
+                for h in horarios:
+                    servico = View.servico_listar_id(h.get_id_servico())
+                    profissional = View.profissional_listar_id(h.get_id_profissional())
+                    tabela.append({
+                        "id": h.get_id(),
+                        "data": h.get_data().strftime("%Y-%m-%d %H:%M:%S"),
+                        "confirmado": "✅" if h.get_confirmado() else "☐",
+                        "serviço": servico.get_descricao() if servico else "None",
+                        "profissional": profissional.get_nome() if profissional else "None"
+                    })
+                st.dataframe(tabela, use_container_width=True)
+
+        # ---------------- TAREFA 5 - ALTERAR SENHA ----------------
         elif menu == "Alterar Senha":
+            st.subheader("🔒 Alterar Senha")
             nova = st.text_input("Digite a nova senha", type="password")
-            if st.button("Salvar nova senha"):
-                View.alterar_senha(id_cliente, nova, "c")
-                st.success("Senha alterada com sucesso!")
+            if st.button("Salvar"):
+                if View.alterar_senha(id_cliente, nova, "c"):
+                    st.success("Senha alterada com sucesso!")
+                else:
+                    st.error("Erro ao alterar senha.")
