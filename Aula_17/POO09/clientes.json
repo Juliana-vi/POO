@@ -133,13 +133,6 @@
     "senha": "lu"
   },
   {
-    "id": 22,
-    "nome": "silvia",
-    "email": "silvia@gmail.com",
-    "fone": "2",
-    "senha": "silvia"
-  },
-  {
     "id": 23,
     "nome": "silvia",
     "email": "silvia@gmail.com",
@@ -194,5 +187,19 @@
     "email": "euu@gmail.com",
     "fone": "88",
     "senha": "eu"
+  },
+  {
+    "id": 32,
+    "nome": "elena",
+    "email": "elena@gmail.com",
+    "fone": "54",
+    "senha": "elena"
+  },
+  {
+    "id": 22,
+    "nome": "silvia",
+    "email": "silvia@gmail.com",
+    "fone": "22",
+    "senha": "silvia"
   }
 ]

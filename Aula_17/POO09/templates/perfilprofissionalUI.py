@@ -17,9 +17,8 @@ class PerfilProfissionalUI:
             "Alterar Senha"
         ])
 
-        # ---------------- TAREFA 1 - ABRIR MINHA AGENDA ----------------
         if menu == "Abrir Agenda":
-            st.subheader("🗓️ Abrir Minha Agenda")
+            st.subheader("Abrir Minha Agenda")
             st.write("Informe a data e os horários de atendimento que deseja disponibilizar:")
 
             data = st.date_input("Informe a data no formato dd/mm/aaaa")
@@ -45,9 +44,8 @@ class PerfilProfissionalUI:
                         count += 1
                     st.success(f"Agenda aberta com sucesso! {count} horários foram gerados para o dia {data.strftime('%d/%m/%Y')}.")
 
-        # ---------------- TAREFA 2 - VISUALIZAR MINHA AGENDA ----------------
         elif menu == "Visualizar Agenda":
-            st.subheader("📋 Minha Agenda")
+            st.subheader("Minha Agenda")
             horarios = View.filtrar_horarios_profissional(id_profissional)
 
             if not horarios:
@@ -66,7 +64,6 @@ class PerfilProfissionalUI:
                     })
                 st.dataframe(tabela, use_container_width=True)
 
-        # ---------------- TAREFA 4 - CONFIRMAR SERVIÇO ----------------
         elif menu == "Confirmar Serviço":
             st.subheader("✅ Confirmar Serviço")
             horarios = [h for h in View.filtrar_horarios_profissional(id_profissional) if h.get_id_cliente()]
@@ -101,9 +98,8 @@ class PerfilProfissionalUI:
                     st.success("Serviço confirmado com sucesso!")
                     st.rerun()
 
-        # ---------------- TAREFA 5 - ALTERAR SENHA ----------------
         elif menu == "Alterar Senha":
-            st.subheader("🔒 Alterar Senha")
+            st.subheader("Alterar Senha")
             nova = st.text_input("Digite a nova senha", type="password")
             if st.button("Salvar"):
                 if View.alterar_senha(id_profissional, nova, "p"):

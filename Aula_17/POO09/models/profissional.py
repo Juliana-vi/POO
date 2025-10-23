@@ -54,11 +54,9 @@ class ProfissionalDAO:
         for aux in cls.__objetos:
             if aux.get_id() > max_id:
                 max_id = aux.get_id()
-        # se não houver setter público para id, ajusta diretamente
         try:
             obj.set_id(max_id + 1)
         except AttributeError:
-            # fallback: força o atributo privado
             obj._Profissional__id = max_id + 1
         cls.__objetos.append(obj)
         cls.salvar()

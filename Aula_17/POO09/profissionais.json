@@ -30,5 +30,13 @@
     "conselho": "consultoria",
     "email": "leila@gmail.com",
     "senha": "leila"
+  },
+  {
+    "id": 6,
+    "nome": "rosa",
+    "especialidade": "cardiologista",
+    "conselho": "cardiologia",
+    "email": "rosa@gmail.com",
+    "senha": "rosa"
   }
 ]

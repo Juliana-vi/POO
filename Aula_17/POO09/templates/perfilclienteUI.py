@@ -16,7 +16,6 @@ class PerfilClienteUI:
             "Alterar Senha"
         ])
 
-        # --- Dados Pessoais ---
         if menu == "Meus Dados":
             c = View.cliente_listar_id(id_cliente)
             st.write(f"**Nome:** {c.get_nome()}")
@@ -24,7 +23,7 @@ class PerfilClienteUI:
             st.write(f"**Telefone:** {c.get_fone()}")
 
         if menu == "Meus Serviços":
-            st.subheader("📋 Meus Serviços")
+            st.subheader("Meus Serviços")
 
             horarios = View.filtrar_horarios_cliente(id_cliente)
 
@@ -44,9 +43,8 @@ class PerfilClienteUI:
                     })
                 st.dataframe(tabela, use_container_width=True)
 
-        # ---------------- TAREFA 5 - ALTERAR SENHA ----------------
         elif menu == "Alterar Senha":
-            st.subheader("🔒 Alterar Senha")
+            st.subheader("Alterar Senha")
             nova = st.text_input("Digite a nova senha", type="password")
             if st.button("Salvar"):
                 if View.alterar_senha(id_cliente, nova, "c"):

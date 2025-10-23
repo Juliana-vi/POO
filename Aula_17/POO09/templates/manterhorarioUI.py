@@ -17,7 +17,6 @@ class ManterHorarioUI:
         with tab4:
             ManterHorarioUI.excluir()
 
-    # ---------------- LISTAR ----------------
     @staticmethod
     def listar():
         horarios = View.horario_listar()
@@ -40,7 +39,6 @@ class ManterHorarioUI:
 
         st.dataframe(dados, use_container_width=True)
 
-    # ---------------- INSERIR ----------------
     @staticmethod
     def inserir():
         profissionais = View.profissional_listar()
@@ -68,7 +66,6 @@ class ManterHorarioUI:
             st.success("Horário inserido com sucesso!")
             st.rerun()
 
-    # ---------------- ATUALIZAR ----------------
     @staticmethod
     def atualizar():
         horarios = View.horario_listar()
@@ -86,7 +83,6 @@ class ManterHorarioUI:
         profissionais = View.profissional_listar()
         clientes = View.cliente_listar()
 
-        # ⚙️ Correção robusta — evita erro se id_profissional for 0 ou inexistente
         prof_id_atual = h.get_id_profissional()
         ids_profissionais = [p.get_id() for p in profissionais]
         if prof_id_atual in ids_profissionais:
@@ -121,7 +117,6 @@ class ManterHorarioUI:
             st.success("Horário atualizado com sucesso!")
             st.rerun()
 
-    # ---------------- EXCLUIR ----------------
     @staticmethod
     def excluir():
         horarios = View.horario_listar()

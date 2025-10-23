@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 
 class View:
 
-    # -------- CLIENTE --------
     def cliente_criar_admin():
         for c in View.cliente_listar():
             if c.get_email() == "admin":
@@ -19,7 +18,6 @@ class View:
         Autentica tanto clientes normais quanto o admin.
         O admin é identificado por email='admin'
         """
-        # 🔐 Caso seja admin
         if email == "admin":
             admin = next((c for c in View.cliente_listar() if c.get_email() == "admin"), None)
             if admin and admin.get_senha() == senha:
@@ -27,7 +25,6 @@ class View:
             else:
                 return None
 
-        # 👥 Caso seja cliente normal
         for c in View.cliente_listar():
             if c.get_email() == email and c.get_senha() == senha:
                 return {"id": c.get_id(), "nome": c.get_nome(), "tipo": "c"}
