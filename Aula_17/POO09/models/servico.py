@@ -1,4 +1,6 @@
 import json
+from models.horario import Horario 
+from models.horario import HorarioDAO
 
 class Servico:
     def __init__(self, servico_id, descricao, valor):
@@ -98,21 +100,21 @@ class ServicoDAO:
 
     @staticmethod
     def listar_agenda_cliente(id_cliente):
-        lista = AgendarServico.abrir()
+        lista = HorarioDAO.abrir()
         return [a for a in lista if a._AgendarServico__id_cliente == id_cliente]
 
     @staticmethod
     def listar_agenda_profissional(id_prof):
-        lista = AgendarServico.abrir()
+        lista = HorarioDAO.abrir()
         return [a for a in lista if a._AgendarServico__id_profissional == id_prof]
 
     @staticmethod
     def confirmar_servico(id_agendamento):
-        lista = AgendarServico.abrir()
+        lista = HorarioDAO.abrir()
         for a in lista:
             if a._AgendarServico__id == id_agendamento:
                 a._AgendarServico__confirmado = True
-                AgendarServico.salvar(lista)
+                HorarioDAO.salvar(lista)
                 return True
         return False
 

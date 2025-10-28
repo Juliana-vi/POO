@@ -65,7 +65,7 @@ class PerfilProfissionalUI:
                 st.dataframe(tabela, use_container_width=True)
 
         elif menu == "Confirmar Serviço":
-            st.subheader("✅ Confirmar Serviço")
+            st.subheader("Confirmar Serviço")
             horarios = [h for h in View.filtrar_horarios_profissional(id_profissional) if h.get_id_cliente()]
 
             if not horarios:

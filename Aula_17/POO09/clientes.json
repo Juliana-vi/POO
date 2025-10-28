@@ -201,5 +201,26 @@
     "email": "silvia@gmail.com",
     "fone": "22",
     "senha": "silvia"
+  },
+  {
+    "id": 33,
+    "nome": "admin",
+    "email": "admin",
+    "fone": "9",
+    "senha": "33"
+  },
+  {
+    "id": 34,
+    "nome": "admin",
+    "email": "admin",
+    "fone": "9",
+    "senha": "33"
+  },
+  {
+    "id": 35,
+    "nome": "diana",
+    "email": "diana@gmail.com",
+    "fone": "233",
+    "senha": "diana"
   }
 ]

@@ -8,5 +8,10 @@
     "id": 5,
     "descricao": "consultor",
     "valor": 4000.0200000000004
+  },
+  {
+    "id": 6,
+    "descricao": "estilista",
+    "valor": 5200.0
   }
 ]

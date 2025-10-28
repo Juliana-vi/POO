@@ -14,85 +14,32 @@ class View:
 
     @staticmethod
     def cliente_autenticar(email, senha):
-        """
-        Autentica clientes e admin.
-        Esta versão é robusta: aceita que ClienteDAO.listar() retorne objetos (com métodos)
-        ou dicionários (com chaves 'email'/'senha'). Retorna dict com 'id','nome','tipo'.
-        """
-        def extract_email_senha(obj):
-            # tenta extrair email e senha do item (obj pode ser Cliente ou dict)
-            if obj is None:
-                return (None, None)
-            # objeto com métodos
-            if hasattr(obj, "get_email") and callable(getattr(obj, "get_email")):
-                try:
-                    return (obj.get_email(), obj.get_senha())
-                except Exception:
-                    return (None, None)
-            # dicionário (ou similar)
-            if isinstance(obj, dict):
-                # vários formatos possíveis; tentamos chaves comuns
-                email_key = None
-                senha_key = None
-                for k in ("email", "_Cliente__email", "email_cliente", "login"):
-                    if k in obj:
-                        email_key = k
-                        break
-                for k in ("senha", "_Cliente__senha", "password", "passwd"):
-                    if k in obj:
-                        senha_key = k
-                        break
-                return (obj.get(email_key) if email_key else None, obj.get(senha_key) if senha_key else None)
-            # fallback: str representation — não confiável
-            return (None, None)
 
-        clientes = View.cliente_listar()
+      clientes = View.cliente_listar()
 
-        if email == "admin":
-            for c in clientes:
-                em, pw = extract_email_senha(c)
-                if em == "admin":
-                    # confere senha
-                    if pw == senha:
-                        # id e nome: tenta extrair
-                        id_val = None
-                        nome = "admin"
-                        if hasattr(c, "get_id"):
-                            try:
-                                id_val = c.get_id()
-                            except:
-                                id_val = None
-                        elif isinstance(c, dict):
-                            id_val = c.get("id") or c.get("_Cliente__id")
-                        return {"id": id_val, "nome": nome, "tipo": "a"}
-                    else:
-                        return None
-            return None
+      def extrair(c):
+        if hasattr(c, "get_email"):
+            return c.get_email(), c.get_senha()
+        elif isinstance(c, dict):
+            return c.get("email") or c.get("_Cliente__email"), c.get("senha") or c.get("_Cliente__senha")
+        return None, None
 
+      if email == "admin":
         for c in clientes:
-            em, pw = extract_email_senha(c)
-            if em == email and pw == senha:
-                # extrai id e nome
-                id_val = None
-                nome = None
-                if hasattr(c, "get_id"):
-                    try:
-                        id_val = c.get_id()
-                    except:
-                        id_val = None
-                    try:
-                        nome = c.get_nome()
-                    except:
-                        nome = None
-                elif isinstance(c, dict):
-                    id_val = c.get("id") or c.get("_Cliente__id")
-                    nome = c.get("nome") or c.get("_Cliente__nome")
-                # fallback values
-                if nome is None:
-                    nome = em
-                return {"id": id_val, "nome": nome, "tipo": "c"}
-
+            em, pw = extrair(c)
+            if em == "admin" and pw == senha:
+                id_val = c.get_id() if hasattr(c, "get_id") else 0
+                return {"id": id_val, "nome": "admin", "tipo": "a"}
         return None
+
+      for c in clientes:
+        em, pw = extrair(c)
+        if em == email and pw == senha:
+            id_val = c.get_id() if hasattr(c, "get_id") else None
+            nome = c.get_nome() if hasattr(c, "get_nome") else em
+            return {"id": id_val, "nome": nome, "tipo": "c"}
+
+      return None
 
     def cliente_listar():
         r = ClienteDAO.listar()
@@ -119,7 +66,6 @@ class View:
                 return cliente
         return None
 
-    # -------- SERVIÇO --------
     def servico_listar():
         r = ServicoDAO.listar()
         r.sort(key=lambda obj: obj.get_descricao())
@@ -145,14 +91,12 @@ class View:
                 return servico
         return None
 
-    # -------- HORÁRIO --------
     def horario_listar():
         r = HorarioDAO.listar()
         r.sort(key=lambda obj: obj.get_data())
         return r
 
     def horario_inserir(data, confirmado, id_cliente, id_servico, id_profissional):
-        # data pode vir como string ou datetime
         from datetime import datetime
         if isinstance(data, str):
             try:
@@ -229,9 +173,6 @@ class View:
         return False
 
 
-
-
-    # -------- PROFISSIONAL --------
     def profissional_listar():
         r = ProfissionalDAO.listar()
         r.sort(key=lambda obj: obj.get_nome())
@@ -390,36 +331,23 @@ class View:
 
     @staticmethod
     def alterar_senha(id_usuario, nova_senha, tipo):
-        """
-        Atualiza senha dependendo do tipo:
-        - 'c' cliente: atualiza pelo id (se encontrado)
-        - 'p' profissional: atualiza pelo id
-        - 'a' admin: atualiza sempre o registro com email == 'admin'
-        Retorna True se atualizou, False caso contrário.
-        """
-        # clientes e profissionais via DAO
-        # usamos as classes já importadas no topo do arquivo (ClienteDAO, ProfissionalDAO)
         if tipo == "c":
             c = View.cliente_listar_id(id_usuario)
             if c:
-                # suporta objeto ou dict
                 if hasattr(c, "set_senha"):
                     c.set_senha(nova_senha)
                     ClienteDAO.atualizar(c)
                 elif isinstance(c, dict):
                     c_key = c.get("id") or c.get("_Cliente__id")
-                    # atualizar via lista salva inteira
                     lista = ClienteDAO.listar()
                     for item in lista:
                         if (isinstance(item, dict) and (item.get("id") == c_key or item.get("_Cliente__id") == c_key)) \
                            or (hasattr(item, "get_id") and item.get_id() == c_key):
-                            # item pode ser objeto ou dict
                             if hasattr(item, "set_senha"):
                                 item.set_senha(nova_senha)
                                 ClienteDAO.atualizar(item)
                             else:
                                 item["senha"] = nova_senha
-                                # regrava lista inteira
                                 try:
                                     ClienteDAO.salvar(lista)
                                 except Exception:
@@ -435,7 +363,6 @@ class View:
                     p.set_senha(nova_senha)
                     ProfissionalDAO.atualizar(p)
                 else:
-                    # fallback se dict
                     lista = ProfissionalDAO.listar()
                     for item in lista:
                         if (isinstance(item, dict) and (item.get("id") == id_usuario or item.get("_Profissional__id") == id_usuario)) \
@@ -454,32 +381,17 @@ class View:
             return False
 
         elif tipo == "a":
-            # força atualizar o registro cujo email é "admin"
-            lista = ClienteDAO.listar()
-            found = False
-            for item in lista:
-                # item pode ser objeto ou dict
-                if hasattr(item, "get_email") and item.get_email() == "admin":
-                    if hasattr(item, "set_senha"):
-                        item.set_senha(nova_senha)
-                        ClienteDAO.atualizar(item)
-                    else:
-                        item_key = item.get("id") if isinstance(item, dict) else None
-                        item["senha"] = nova_senha
-                        try:
-                            ClienteDAO.salvar(lista)
-                        except Exception:
-                            pass
-                    found = True
-                    break
-                elif isinstance(item, dict) and (item.get("email") == "admin" or item.get("_Cliente__email") == "admin"):
-                    item["senha"] = nova_senha
-                    try:
-                        ClienteDAO.salvar(lista)
-                    except Exception:
-                        pass
-                    found = True
-                    break
-            return found
-
-        return False
+          lista = ClienteDAO.listar()
+          for c in lista:
+            if hasattr(c, "get_email") and c.get_email() == "admin":
+              c.set_senha(nova_senha)
+              ClienteDAO.atualizar(c)
+              return True
+            elif isinstance(c, dict) and (c.get("email") == "admin" or c.get("_Cliente__email") == "admin"):
+              c["senha"] = nova_senha
+              try:
+                ClienteDAO.salvar(lista)
+              except Exception:
+                pass
+              return True
+          return False
