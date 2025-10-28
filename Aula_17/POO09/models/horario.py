@@ -3,6 +3,10 @@ import json
 
 class Horario:
     def __init__(self, id, data):
+        if isinstance(data, str):
+            data = datetime.fromisoformat(data)
+        if data.year < 2025:
+            raise ValueError("Não é permitido cadastrar horários com data anterior a 2025.")
         self.set_id(id)
         self.set_data(data)
         self.set_confirmado(False)

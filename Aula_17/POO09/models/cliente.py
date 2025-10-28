@@ -2,6 +2,8 @@ import json
 
 class Cliente:
     def __init__(self, cliente_id, nome, email, fone, senha):
+        if not nome or not email or not senha:
+            raise ValueError("Cliente deve ter nome, email e senha válidos.")
         self.__id = cliente_id
         self.__nome = nome
         self.__email = email

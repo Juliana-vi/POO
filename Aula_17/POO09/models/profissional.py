@@ -2,6 +2,8 @@ import json
 
 class Profissional:
     def __init__(self, prof_id, nome, especialidade, conselho, email, senha):
+        if not nome or not email or not senha:
+            raise ValueError("Profissional deve ter nome, email e senha válidos.")
         self.__id = prof_id
         self.__nome = nome
         self.__especialidade = especialidade
