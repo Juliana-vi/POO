@@ -30,12 +30,13 @@ class PerfilProfissionalUI:
             )
 
             if st.button("Abrir Agenda"):
-                inicio = datetime.combine(data, hora_inicial)
-                fim = datetime.combine(data, hora_final)
+                try:
+                  inicio = datetime.combine(data, hora_inicial)
+                  fim = datetime.combine(data, hora_final)
 
-                if inicio >= fim:
+                  if inicio >= fim:
                     st.error("O horário inicial deve ser anterior ao horário final.")
-                else:
+                  else:
                     atual = inicio
                     count = 0
                     while atual < fim:
@@ -43,14 +44,17 @@ class PerfilProfissionalUI:
                         atual += timedelta(minutes=intervalo)
                         count += 1
                     st.success(f"Agenda aberta com sucesso! {count} horários foram gerados para o dia {data.strftime('%d/%m/%Y')}.")
+                except ValueError as e:
+                   st.error(f"Erro: {e}")
 
         elif menu == "Visualizar Agenda":
             st.subheader("Minha Agenda")
-            horarios = View.filtrar_horarios_profissional(id_profissional)
+            try:
+              horarios = View.filtrar_horarios_profissional(id_profissional)
 
-            if not horarios:
+              if not horarios:
                 st.info("Nenhum horário cadastrado.")
-            else:
+              else:
                 tabela = []
                 for h in horarios:
                     cliente = View.cliente_listar_id(h.get_id_cliente())
@@ -63,14 +67,17 @@ class PerfilProfissionalUI:
                         "serviço": servico.get_descricao() if servico else "None"
                     })
                 st.dataframe(tabela, use_container_width=True)
+            except ValueError as e:
+                st.error(f"Erro: {e}")
 
         elif menu == "Confirmar Serviço":
             st.subheader("Confirmar Serviço")
-            horarios = [h for h in View.filtrar_horarios_profissional(id_profissional) if h.get_id_cliente()]
+            try:
+              horarios = [h for h in View.filtrar_horarios_profissional(id_profissional) if h.get_id_cliente()]
 
-            if not horarios:
+              if not horarios:
                 st.info("Nenhum serviço pendente de confirmação.")
-            else:
+              else:
                 op = st.selectbox(
                     "Informe o horário",
                     [f"{h.get_id()} - {h.get_data().strftime('%d/%m/%Y %H:%M')} - {h.get_confirmado()}" for h in horarios]
@@ -94,15 +101,25 @@ class PerfilProfissionalUI:
                     )
 
                 if st.button("Confirmar"):
-                    View.confirmar_servico_profissional(id_horario)
-                    st.success("Serviço confirmado com sucesso!")
-                    st.rerun()
+                    try:
+                      View.confirmar_servico_profissional(id_horario)
+                      st.success("Serviço confirmado com sucesso!")
+                      st.rerun()
+                    except ValueError as e:
+                        st.error(f"Erro: {e}")
+            except ValueError as e:
+                st.error(f"Erro: {e}")
 
         elif menu == "Alterar Senha":
             st.subheader("Alterar Senha")
             nova = st.text_input("Digite a nova senha", type="password")
             if st.button("Salvar"):
-                if View.alterar_senha(id_profissional, nova, "p"):
+                try:
+                  if not nova:
+                        raise ValueError("A senha não pode ser vazia.")
+                  if View.alterar_senha(id_profissional, nova, "p"):
                     st.success("Senha alterada com sucesso!")
-                else:
+                  else:
                     st.error("Erro ao alterar senha.")
+                except ValueError as e:
+                    st.error(f"Erro: {e}")

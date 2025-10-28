@@ -42,12 +42,15 @@ class ManterProfissionalUI:
         senha = st.text_input("Senha", type="password")
 
         if st.button("Inserir Profissional"):
-            if nome and especialidade and conselho and email and senha:
+            try:
+              if nome and especialidade and conselho and email and senha:
                 View.profissional_inserir(nome, especialidade, conselho, email, senha)
                 st.success("Profissional inserido com sucesso!")
                 st.rerun()
-            else:
+              else:
                 st.warning("Preencha todos os campos antes de inserir.")
+            except ValueError as e:
+                st.error(f"Erro: {e}")
 
     @staticmethod
     def atualizar():
@@ -67,9 +70,12 @@ class ManterProfissionalUI:
         senha = st.text_input("Nova senha", value=p.get_senha(), type="password")
 
         if st.button("Atualizar Profissional"):
-            View.profissional_atualizar(id, nome, especialidade, conselho, email, senha)
-            st.success("Profissional atualizado com sucesso!")
-            st.rerun()
+            try:
+              View.profissional_atualizar(id, nome, especialidade, conselho, email, senha)
+              st.success("Profissional atualizado com sucesso!")
+              st.rerun()
+            except ValueError as e:
+              st.error(f"Erro: {e}")
 
     @staticmethod
     def excluir():
@@ -82,6 +88,9 @@ class ManterProfissionalUI:
         id = int(opcao.split(" - ")[0])
 
         if st.button("Excluir Profissional"):
-            View.profissional_excluir(id)
-            st.success("Profissional excluído com sucesso!")
-            st.rerun()
+            try:
+              View.profissional_excluir(id)
+              st.success("Profissional excluído com sucesso!")
+              st.rerun()
+            except ValueError as e:
+                st.error(f"Erro: {e}")

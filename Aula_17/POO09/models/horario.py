@@ -97,8 +97,11 @@ class HorarioDAO:
             with open("horarios.json", mode="r") as arquivo:
                 list_dic = json.load(arquivo)
                 for dic in list_dic:
-                    obj = Horario.from_json(dic)
-                    cls.__objetos.append(obj)
+                    try:
+                      obj = Horario.from_json(dic)
+                      cls.__objetos.append(obj)
+                    except ValueError:
+                      print(f"[AVISO] Horário inválido ignorado: {dic}")
         except FileNotFoundError:
             pass
 

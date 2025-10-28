@@ -100,7 +100,10 @@ class ProfissionalDAO:
             with open("profissionais.json", "r") as f:
                 lista = json.load(f)
                 for dic in lista:
-                    cls.__objetos.append(Profissional.from_json(dic))
+                    try:
+                       cls.__objetos.append(Profissional.from_json(dic))
+                    except ValueError:
+                      print(f"[AVISO] Profissional inválido ignorado: {dic}")
         except (FileNotFoundError, json.JSONDecodeError):
             cls.__objetos = []
 

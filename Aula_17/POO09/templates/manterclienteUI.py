@@ -38,12 +38,15 @@ class ManterClienteUI:
         fone = st.text_input("Fone", key="cli_fone")
         senha = st.text_input("Senha", type="password", key="cli_senha")
         if st.button("Inserir Cliente"):
-            if not nome or not email:
+            try:
+              if not nome or not email:
                 st.error("Nome e email obrigatórios.")
-            else:
+              else:
                 View.cliente_inserir(nome, email, fone, senha)
                 st.success("Cliente inserido.")
                 st.rerun()
+            except ValueError as e:
+                st.error(f"Erro: {e}")
 
     @staticmethod
     def atualizar():
@@ -59,9 +62,12 @@ class ManterClienteUI:
         fone = st.text_input("Fone", value=c.get_fone())
         senha = st.text_input("Senha (deixe em branco para manter)", type="password")
         if st.button("Atualizar Cliente"):
-            View.cliente_atualizar(id_sel, nome, email, fone, senha if senha else c.get_senha())
-            st.success("Cliente atualizado.")
-            st.rerun()
+            try:
+              View.cliente_atualizar(id_sel, nome, email, fone, senha if senha else c.get_senha())
+              st.success("Cliente atualizado.")
+              st.rerun()
+            except ValueError as e:
+                st.error(f"Erro: {e}")
 
     @staticmethod
     def excluir():
@@ -72,6 +78,9 @@ class ManterClienteUI:
         opcao = st.selectbox("Selecione cliente para excluir", [f"{c.get_id()} - {c.get_nome()}" for c in clientes])
         id_sel = int(opcao.split(" - ")[0])
         if st.button("Excluir Cliente"):
-            View.cliente_excluir(id_sel)
-            st.success("Cliente excluído.")
-            st.rerun()
+            try:
+              View.cliente_excluir(id_sel)
+              st.success("Cliente excluído.")
+              st.rerun()
+            except ValueError as e:
+                st.error(f"Erro: {e}")

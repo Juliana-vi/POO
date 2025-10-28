@@ -72,10 +72,12 @@ class View:
 
 
     def cliente_excluir(id):
+      cliente = View.cliente_listar_id(id)
+      if not cliente:
+        raise ValueError("Cliente não encontrado.")
       for h in View.horario_listar():
         if h.get_id_cliente() == id:
             raise ValueError("Não é possível excluir cliente com horário agendado.")
-      cliente = Cliente(id, "", "", "", "")
       ClienteDAO.excluir(cliente)
 
 

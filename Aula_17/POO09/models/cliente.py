@@ -20,10 +20,20 @@ class Cliente:
     def get_senha(self): return self.__senha
 
     def set_id(self, cliente_id): self.__id = cliente_id
-    def set_nome(self, nome): self.__nome = nome
-    def set_email(self, email): self.__email = email
+    def set_nome(self, nome):
+        if not nome:
+            raise ValueError("Nome não pode ser vazio.")
+        self.__nome = nome
+    def set_email(self, email):
+        if not email:
+            raise ValueError("Email não pode ser vazio.")
+        self.__email = email
     def set_fone(self, fone): self.__fone = fone
-    def set_senha(self, senha): self.__senha = senha
+    def set_senha(self, senha):
+        if not senha:
+            raise ValueError("Senha não pode ser vazia.")
+        self.__senha = senha
+
 
     def to_json(self):
         return {
@@ -96,7 +106,10 @@ class ClienteDAO:
             with open("clientes.json", "r") as f:
                 lista = json.load(f)
                 for dic in lista:
-                    cls.__objetos.append(Cliente.from_json(dic))
+                    try:
+                      cls.__objetos.append(Cliente.from_json(dic))
+                    except ValueError:
+                      print(f"[AVISO] Cliente inválido ignorado: {dic}")
         except (FileNotFoundError, json.JSONDecodeError):
             cls.__objetos = []
 

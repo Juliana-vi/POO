@@ -61,10 +61,13 @@ class ManterHorarioUI:
                 id_cliente = int(cliente_opcional.split(" - ")[0])
 
         if st.button("Inserir Horário"):
-            data_hora = datetime.combine(data, hora)
-            View.horario_inserir(data_hora, False, id_cliente, None, id_prof)
-            st.success("Horário inserido com sucesso!")
-            st.rerun()
+            try:
+              data_hora = datetime.combine(data, hora)
+              View.horario_inserir(data_hora, False, id_cliente, None, id_prof)
+              st.success("Horário inserido com sucesso!")
+              st.rerun()
+            except ValueError as e:
+                st.error(f"Erro: {e}")
 
     @staticmethod
     def atualizar():
@@ -105,17 +108,20 @@ class ManterHorarioUI:
         id_cliente = None if cliente_opcional == "— Nenhum —" else int(cliente_opcional.split(" - ")[0])
 
         if st.button("Atualizar Horário"):
-            nova_data = datetime.combine(data, hora)
-            View.horario_atualizar(
+            try:
+              nova_data = datetime.combine(data, hora)
+              View.horario_atualizar(
                 id, 
                 nova_data, 
                 h.get_confirmado(), 
                 id_cliente, 
                 h.get_id_servico(), 
                 id_prof
-            )
-            st.success("Horário atualizado com sucesso!")
-            st.rerun()
+               )
+              st.success("Horário atualizado com sucesso!")
+              st.rerun()
+            except ValueError as e:
+                st.error(f"Erro: {e}")
 
     @staticmethod
     def excluir():
@@ -128,6 +134,9 @@ class ManterHorarioUI:
         id = int(opcao.split(" - ")[0])
 
         if st.button("Excluir Horário"):
-            View.horario_excluir(id)
-            st.success("Horário excluído com sucesso!")
-            st.rerun()
+            try:
+              View.horario_excluir(id)
+              st.success("Horário excluído com sucesso!")
+              st.rerun()
+            except ValueError as e:
+                st.error(f"Erro: {e}")

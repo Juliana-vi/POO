@@ -17,19 +17,22 @@ class PerfilClienteUI:
         ])
 
         if menu == "Meus Dados":
-            c = View.cliente_listar_id(id_cliente)
-            st.write(f"**Nome:** {c.get_nome()}")
-            st.write(f"**E-mail:** {c.get_email()}")
-            st.write(f"**Telefone:** {c.get_fone()}")
+            try:
+              c = View.cliente_listar_id(id_cliente)
+              st.write(f"**Nome:** {c.get_nome()}")
+              st.write(f"**E-mail:** {c.get_email()}")
+              st.write(f"**Telefone:** {c.get_fone()}")
+            except ValueError as e:
+                st.error(f"Erro: {e}")
 
         if menu == "Meus Serviços":
             st.subheader("Meus Serviços")
+            try:
+              horarios = View.filtrar_horarios_cliente(id_cliente)
 
-            horarios = View.filtrar_horarios_cliente(id_cliente)
-
-            if not horarios:
+              if not horarios:
                 st.info("Nenhum serviço agendado encontrado.")
-            else:
+              else:
                 tabela = []
                 for h in horarios:
                     servico = View.servico_listar_id(h.get_id_servico())
@@ -42,12 +45,19 @@ class PerfilClienteUI:
                         "profissional": profissional.get_nome() if profissional else "None"
                     })
                 st.dataframe(tabela, use_container_width=True)
+            except ValueError as e:
+                st.error(f"Erro: {e}")
 
         elif menu == "Alterar Senha":
             st.subheader("Alterar Senha")
             nova = st.text_input("Digite a nova senha", type="password")
             if st.button("Salvar"):
-                if View.alterar_senha(id_cliente, nova, "c"):
+                try:
+                  if not nova:
+                        raise ValueError("A senha não pode ser vazia.")
+                  if View.alterar_senha(id_cliente, nova, "c"):
                     st.success("Senha alterada com sucesso!")
-                else:
+                  else:
                     st.error("Erro ao alterar senha.")
+                except ValueError as e:
+                    st.error(f"Erro: {e}")
