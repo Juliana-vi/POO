@@ -1,31 +1,10 @@
 [
   {
-    "id": 2,
-    "nome": "julia",
-    "email": "julia@gmail.com",
-    "fone": "888888334",
-    "senha": ""
-  },
-  {
-    "id": 3,
-    "nome": "paulo",
-    "email": "paulo@gmail.com",
-    "fone": "7",
-    "senha": ""
-  },
-  {
     "id": 4,
     "nome": "admin",
     "email": "admin",
     "fone": "fone",
     "senha": "1234"
-  },
-  {
-    "id": 5,
-    "nome": "<bound method Cliente.get_nome of <models.cliente.Cliente object at 0x7258e3c4cf20>>",
-    "email": "juliana@gmail.com",
-    "fone": "99999",
-    "senha": "euu"
   },
   {
     "id": 6,
@@ -222,5 +201,19 @@
     "email": "diana@gmail.com",
     "fone": "233",
     "senha": "diana"
+  },
+  {
+    "id": 36,
+    "nome": "elthon",
+    "email": "elthon@gmail.com",
+    "fone": "99",
+    "senha": "elthon"
+  },
+  {
+    "id": 5,
+    "nome": "laura",
+    "email": "laura@gmail.com",
+    "fone": "99999",
+    "senha": "laura"
   }
 ]
