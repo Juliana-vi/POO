@@ -7,20 +7,6 @@
     "senha": "1234"
   },
   {
-    "id": 6,
-    "nome": "<bound method Cliente.get_nome of <models.cliente.Cliente object at 0x76fc6ef53fe0>>",
-    "email": "juliana@gmail.com",
-    "fone": "99",
-    "senha": "velma"
-  },
-  {
-    "id": 7,
-    "nome": "Juliana Vianna",
-    "email": "juliana@gmail.com",
-    "fone": "juliana@gmail.com",
-    "senha": "1234"
-  },
-  {
     "id": 8,
     "nome": "Juliana Vianna",
     "email": "juliana@gmail.com",
@@ -215,5 +201,19 @@
     "email": "laura@gmail.com",
     "fone": "99999",
     "senha": "laura"
+  },
+  {
+    "id": 6,
+    "nome": "Linda",
+    "email": "linda@gmail.com",
+    "fone": "99",
+    "senha": "velma"
+  },
+  {
+    "id": 7,
+    "nome": "Diva",
+    "email": "diva@gmail.com",
+    "fone": "8",
+    "senha": "diva"
   }
 ]
