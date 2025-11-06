@@ -3,9 +3,11 @@
     "id": 2,
     "nome": "elisa",
     "especialidade": "nutrologa",
-    "conselho": "nutri\u00e7\u00e3o",
+    "conselho": "nutrição",
     "email": "elisa@gmail.com",
-    "senha": "elisa"
+    "senha": "elisa",
+    "avaliacoes": [],
+    "media_avaliacoes": 0.0
   },
   {
     "id": 3,
@@ -13,15 +15,9 @@
     "especialidade": "professora",
     "conselho": "design",
     "email": "dani@gmail.com",
-    "senha": "da"
-  },
-  {
-    "id": 4,
-    "nome": "Ana Fl\u00e1via",
-    "especialidade": "Professora",
-    "conselho": "Educa\u00e7\u00e3o",
-    "email": "anaflavia@gmail.com",
-    "senha": "ana"
+    "senha": "da",
+    "avaliacoes": [],
+    "media_avaliacoes": 0.0
   },
   {
     "id": 5,
@@ -29,7 +25,9 @@
     "especialidade": "consultora",
     "conselho": "consultoria",
     "email": "leila@gmail.com",
-    "senha": "leila"
+    "senha": "leila",
+    "avaliacoes": [],
+    "media_avaliacoes": 0.0
   },
   {
     "id": 6,
@@ -37,6 +35,30 @@
     "especialidade": "cardiologista",
     "conselho": "cardiologia",
     "email": "rosa@gmail.com",
-    "senha": "rosa"
+    "senha": "rosa",
+    "avaliacoes": [
+      {
+        "cliente_id": 36,
+        "nota": 4.5,
+        "comentario": "Acho ela uma ótima profissional, porém um pouco grossa às vezes"
+      }
+    ],
+    "media_avaliacoes": 4.5
+  },
+  {
+    "id": 4,
+    "nome": "Ana Flávia",
+    "especialidade": "Professora",
+    "conselho": "Educação",
+    "email": "anaflavia@gmail.com",
+    "senha": "ana",
+    "avaliacoes": [
+      {
+        "cliente_id": 36,
+        "nota": 5.0,
+        "comentario": "Profissional excelente. Recomendo para todos."
+      }
+    ],
+    "media_avaliacoes": 5.0
   }
 ]

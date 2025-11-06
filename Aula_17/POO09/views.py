@@ -8,10 +8,16 @@ from typing import List
 class View:
 
     def cliente_criar_admin():
-        for c in View.cliente_listar():
-            if c.get_email() == "admin":
-                return
-        View.cliente_inserir("admin", "admin", "fone", "1234")
+      clientes = ClienteDAO.listar()
+      for c in clientes:
+        if hasattr(c, "get_email") and c.get_email() == "admin":
+            return
+        elif isinstance(c, dict) and (c.get("email") == "admin" or c.get("_Cliente__email") == "admin"):
+            return
+    # se não existir, cria
+    admin = Cliente(0, "admin", "admin", "fone", "1234")
+    ClienteDAO.inserir(admin)
+
 
     @staticmethod
     def cliente_autenticar(email, senha):
@@ -416,7 +422,7 @@ class View:
         if not prof:
             return False
             
-        prof.add_avaliacao(id_cliente, nota, comentario)
+        prof.adicionar_avaliacao(id_cliente, nota, comentario)
         ProfissionalDAO.atualizar(prof)
         return True
 
@@ -476,11 +482,14 @@ class View:
             return False
 
         elif tipo == "a":
+    # Garante que o admin exista
+          View.cliente_criar_admin()
           lista = ClienteDAO.listar()
           for c in lista:
             if hasattr(c, "get_email") and c.get_email() == "admin":
               c.set_senha(nova_senha)
               ClienteDAO.atualizar(c)
+              ClienteDAO.salvar()  # ✅ garante gravação imediata
               return True
             elif isinstance(c, dict) and (c.get("email") == "admin" or c.get("_Cliente__email") == "admin"):
               c["senha"] = nova_senha

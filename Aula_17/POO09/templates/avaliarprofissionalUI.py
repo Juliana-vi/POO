@@ -6,8 +6,8 @@ class AvaliarProfissionalUI:
     def main():
         st.header("Avaliar Profissional")
         
-        # Lista apenas os profissionais que já atenderam o cliente
-        atendimentos = View.listar_atendimentos_cliente(st.session_state["usuario_id"])
+        id_cliente = st.session_state["usuario_id"]
+        atendimentos = View.listar_atendimentos_cliente(id_cliente)
         
         if not atendimentos:
             st.info("Você ainda não teve nenhum atendimento para avaliar.")
@@ -18,23 +18,49 @@ class AvaliarProfissionalUI:
             if not prof:
                 continue
 
-            st.subheader(f"Avaliar: {prof.get_nome()}")
-            
-            # Verifica se já avaliou
+            st.subheader(f"Avaliar: {prof.get_nome()} ({prof.get_especialidade()})")
+
             avaliacoes = prof.get_avaliacoes()
-            if any(av["cliente_id"] == st.session_state["usuario_id"] for av in avaliacoes):
-                st.info("Você já avaliou este profissional")
+            ja_avaliou = any(av["cliente_id"] == id_cliente for av in avaliacoes)
+
+            if ja_avaliou:
+                st.info(f"✅ Você já avaliou este profissional.")
+                st.caption(f"Média atual: ⭐ {prof.get_media_avaliacoes():.1f} ({len(avaliacoes)} avaliações)")
                 continue
 
-            nota = st.slider(f"Nota para {prof.get_nome()}", 0.0, 5.0, 5.0, 0.5)
-            comentario = st.text_area(f"Comentário sobre {prof.get_nome()}")
+        # 🔑 Garantindo chaves únicas para cada atendimento do profissional
+        key_base = f"prof_{prof.get_id()}_atd_{atd.get_id()}"
 
-            if st.button(f"Enviar Avaliação para {prof.get_nome()}"):
-                View.avaliar_profissional(
-                    prof.get_id(),
-                    st.session_state["usuario_id"],
-                    nota,
-                    comentario
+        nota = st.slider(
+          f"Nota para {prof.get_nome()}",
+          0.0, 5.0, 5.0, 0.5,
+          key=f"{key_base}_nota"
+        )
+        comentario = st.text_area(
+         f"Comentário sobre {prof.get_nome()}",
+         key=f"{key_base}_comentario"
+  )
+        
+        sucesso = False
+
+        if st.button(f"Enviar Avaliação para {prof.get_nome()}", key=f"{key_base}_btn"):
+              sucesso = View.avaliar_profissional(
+                prof.get_id(),
+                id_cliente,
+                nota,
+                comentario
                 )
-                st.success("Avaliação enviada com sucesso!")
+
+        if sucesso:
+                # Recarrega o objeto atualizado
+                prof_atualizado = View.profissional_listar_id(prof.get_id())
+                media = prof_atualizado.get_media_avaliacoes()
+                qtd = len(prof_atualizado.get_avaliacoes())
+
+                st.success(
+                        f"Avaliação enviada com sucesso! "
+                        f"⭐ Média atual: **{media:.1f}** ({qtd} avaliações)."
+                    )
                 st.rerun()
+        else:
+                 st.error("Erro ao enviar avaliação. Tente novamente.")

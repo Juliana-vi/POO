@@ -58,7 +58,27 @@ class Cliente:
 
 class ClienteDAO(DAO):
     arquivo = str(Path(__file__).parent.parent / "clientes.json")
-    
+
+    @classmethod
+    def abrir(cls):
+        cls._objetos = []
+        try:
+            with open(cls.arquivo, mode="r", encoding="utf-8") as arq:
+                lista = json.load(arq)
+                for dic in lista:
+                    cls._objetos.append(Cliente.from_json(dic))
+        except (FileNotFoundError, json.JSONDecodeError):
+            cls._objetos = []
+
+    @classmethod
+    def salvar(cls):
+        try:
+            with open(cls.arquivo, mode="w", encoding="utf-8") as arq:
+                json.dump([o.to_json() for o in cls._objetos], arq, indent=2, ensure_ascii=False)
+        except Exception as e:
+            print(f"[ERRO] Falha ao salvar clientes: {e}")
+
+    # 🔹 Método específico: alterar senha
     @staticmethod
     def alterar_senha(id_cliente, senha_antiga, nova_senha):
         lista = ClienteDAO.listar()
@@ -68,25 +88,3 @@ class ClienteDAO(DAO):
                 ClienteDAO.salvar()
                 return True
         return False
-    
-    @classmethod
-    def abrir(cls):
-        cls._objetos = []
-        try:
-            with open(cls.arquivo, mode="r") as arquivo:
-                lista = json.load(arquivo)
-                for dic in lista:
-                    try:
-                        cls._objetos.append(Cliente.from_json(dic))
-                    except ValueError:
-                        print(f"[AVISO] Cliente inválido ignorado: {dic}")
-        except (FileNotFoundError, json.JSONDecodeError):
-            cls._objetos = []
-
-    @classmethod 
-    def salvar(cls):
-        try:
-            with open(cls.arquivo, mode="w") as arquivo:
-                json.dump([o.to_json() for o in cls._objetos], arquivo, indent=2)
-        except Exception as e:
-            print("Erro ao salvar clientes:", e)

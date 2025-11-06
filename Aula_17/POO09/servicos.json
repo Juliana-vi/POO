@@ -13,5 +13,20 @@
     "id": 6,
     "descricao": "estilista",
     "valor": 5200.0
+  },
+  {
+    "id": 7,
+    "descricao": "arquiteto",
+    "valor": 10000.0
+  },
+  {
+    "id": 8,
+    "descricao": "TI",
+    "valor": 1600.0
+  },
+  {
+    "id": 9,
+    "descricao": "personal",
+    "valor": 3000.0
   }
 ]

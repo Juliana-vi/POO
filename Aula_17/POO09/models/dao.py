@@ -26,25 +26,27 @@ class DAO(ABC):
         for aux in cls._objetos:
             if aux.get_id() > max_id:
                 max_id = aux.get_id()
-        obj.set_id(max_id + 1)
+        # garante que o objeto tenha set_id
+        if hasattr(obj, "set_id"):
+            obj.set_id(max_id + 1)
         cls._objetos.append(obj)
         cls.salvar()
 
     @classmethod
     def atualizar(cls, obj: Any):
         cls.abrir()
-        aux = cls.listar_id(obj.get_id())
-        if aux is not None:
-            cls._objetos.remove(aux)
+        antigo = cls.listar_id(obj.get_id())
+        if antigo is not None:
+            cls._objetos.remove(antigo)
             cls._objetos.append(obj)
             cls.salvar()
 
     @classmethod
     def excluir(cls, obj: Any):
         cls.abrir()
-        aux = cls.listar_id(obj.get_id())
-        if aux is not None:
-            cls._objetos.remove(aux)
+        antigo = cls.listar_id(obj.get_id())
+        if antigo is not None:
+            cls._objetos.remove(antigo)
             cls.salvar()
 
     @classmethod

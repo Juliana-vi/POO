@@ -1,5 +1,7 @@
 import json
+from pathlib import Path
 from typing import List, Dict
+from models.dao import DAO
 
 class Profissional:
     def __init__(self, prof_id, nome, especialidade, conselho, email, senha):
@@ -11,7 +13,7 @@ class Profissional:
         self.__conselho = conselho
         self.__email = email
         self.__senha = senha
-        self.__avaliacoes: List[Dict] = []  # Lista de avaliações {cliente_id, nota, comentario}
+        self.__avaliacoes: List[Dict] = []
         self.__media_avaliacoes = 0.0
 
     def get_id(self): return self.__id
@@ -21,13 +23,14 @@ class Profissional:
     def get_email(self): return self.__email
     def get_senha(self): return self.__senha
 
+    def set_id(self, i): self.__id = i
     def set_nome(self, nome): self.__nome = nome
     def set_especialidade(self, especialidade): self.__especialidade = especialidade
     def set_conselho(self, conselho): self.__conselho = conselho
     def set_email(self, email): self.__email = email
     def set_senha(self, senha): self.__senha = senha
 
-    def adicionar_avaliacao(self, cliente_id: int, nota: float, comentario: str) -> None:
+    def add_avaliacao(self, cliente_id: int, nota: float, comentario: str):
         self.__avaliacoes.append({
             "cliente_id": cliente_id,
             "nota": nota,
@@ -35,20 +38,16 @@ class Profissional:
         })
         self.__calcular_media()
 
-    def __calcular_media(self) -> None:
+    def __calcular_media(self):
         if not self.__avaliacoes:
             self.__media_avaliacoes = 0.0
-            return
-        total = sum(av["nota"] for av in self.__avaliacoes)
-        self.__media_avaliacoes = total / len(self.__avaliacoes)
+        else:
+            self.__media_avaliacoes = sum(av["nota"] for av in self.__avaliacoes) / len(self.__avaliacoes)
 
-    def get_avaliacoes(self) -> List[Dict]:
-        return self.__avaliacoes
+    def get_avaliacoes(self): return self.__avaliacoes
+    def get_media_avaliacoes(self): return self.__media_avaliacoes
 
-    def get_media_avaliacoes(self) -> float:
-        return self.__media_avaliacoes
-
-    def to_json(self) -> Dict:
+    def to_json(self):
         return {
             "id": self.__id,
             "nome": self.__nome,
@@ -61,8 +60,8 @@ class Profissional:
         }
 
     @staticmethod
-    def from_json(dic: dict) -> 'Profissional':
-        prof = Profissional(
+    def from_json(dic):
+        p = Profissional(
             dic.get("id", 0),
             dic.get("nome", ""),
             dic.get("especialidade", ""),
@@ -70,40 +69,39 @@ class Profissional:
             dic.get("email", ""),
             dic.get("senha", "")
         )
-        prof.__avaliacoes = dic.get("avaliacoes", [])
-        prof.__media_avaliacoes = dic.get("media_avaliacoes", 0.0)
-        return prof
+        p.__avaliacoes = dic.get("avaliacoes", [])
+        p.__media_avaliacoes = dic.get("media_avaliacoes", 0.0)
+        return p
 
+class ProfissionalDAO(DAO):
+    arquivo = str(Path(__file__).parent.parent / "profissionais.json")
 
-class ProfissionalDAO:
-    @staticmethod
-    def alterar_senha(id_prof, senha_antiga, nova_senha):
-        lista = Profissional.abrir()
-        for p in lista:
-            if p._Profissional__id == id_prof and p._Profissional__senha == senha_antiga:
-                p._Profissional__senha = nova_senha
-                Profissional.salvar(lista)
-                return True
-        return False
-    
     @classmethod
     def abrir(cls):
-        cls.__objetos = []
+        cls._objetos = []
         try:
-            with open("profissionais.json", mode="r") as arquivo:
-                lista = json.load(arquivo)
+            with open(cls.arquivo, mode="r", encoding="utf-8") as arq:
+                lista = json.load(arq)
                 for dic in lista:
-                    try:
-                       cls.__objetos.append(Profissional.from_json(dic))
-                    except ValueError:
-                      print(f"[AVISO] Profissional inválido ignorado: {dic}")
+                    cls._objetos.append(Profissional.from_json(dic))
         except (FileNotFoundError, json.JSONDecodeError):
-            cls.__objetos = []
+            cls._objetos = []
 
     @classmethod
     def salvar(cls):
         try:
-            with open("profissionais.json", mode="w") as arquivo:
-                json.dump([o.to_json() for o in cls.__objetos], arquivo, indent=2)
+            with open(cls.arquivo, mode="w", encoding="utf-8") as arq:
+                json.dump([o.to_json() for o in cls._objetos], arq, indent=2, ensure_ascii=False)
         except Exception as e:
-            print("Erro ao salvar profissionais:", e)
+            print(f"[ERRO] Falha ao salvar profissionais: {e}")
+
+    # 🔹 Método específico: alterar senha
+    @staticmethod
+    def alterar_senha(id_prof, senha_antiga, nova_senha):
+        lista = ProfissionalDAO.listar()
+        for p in lista:
+            if p.get_id() == id_prof and p.get_senha() == senha_antiga:
+                p.set_senha(nova_senha)
+                ProfissionalDAO.salvar()
+                return True
+        return False

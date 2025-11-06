@@ -8,6 +8,7 @@ class AgendarServicoUI:
 
         id_cliente = st.session_state["usuario_id"]
 
+        # ============= SERVIÇOS DISPONÍVEIS =============
         servicos = View.servico_listar()
         if not servicos:
             st.warning("Nenhum serviço disponível no momento.")
@@ -20,6 +21,7 @@ class AgendarServicoUI:
         id_servico = int(servico_opcao.split(" - ")[0])
         servico = View.servico_listar_id(id_servico)
 
+        # ============= PROFISSIONAIS DISPONÍVEIS =============
         profissionais = View.profissional_listar()
         if not profissionais:
             st.warning("Nenhum profissional cadastrado no momento.")
@@ -32,6 +34,29 @@ class AgendarServicoUI:
         id_profissional = int(prof_opcao.split(" - ")[0])
         profissional = View.profissional_listar_id(id_profissional)
 
+        # ============= MOSTRAR AVALIAÇÕES DO PROFISSIONAL =============
+        st.markdown("---")
+        st.subheader(f"Avaliações de {profissional.get_nome()} ⭐")
+
+        avaliacoes = profissional.get_avaliacoes()
+        media = profissional.get_media_avaliacoes()
+        total = len(avaliacoes)
+
+        if not avaliacoes:
+            st.info("Este profissional ainda não recebeu avaliações.")
+        else:
+            st.markdown(f"**Média geral:** ⭐ {media:.1f} ({total} avaliações)")
+            st.caption("Os comentários são anônimos para preservar a privacidade dos clientes.")
+            st.divider()
+
+            for i, av in enumerate(sorted(avaliacoes, key=lambda x: -x["nota"]), start=1):
+                st.markdown(
+                    f"**Cliente Anônimo #{i}** — ⭐ **{av['nota']:.1f}**  \n"
+                    f"💬 *{av['comentario']}*"
+                )
+                st.markdown("---")
+
+        # ============= HORÁRIOS DISPONÍVEIS =============
         horarios = [
             h for h in View.profissional_visualizar_agenda(id_profissional)
             if h.get_id_cliente() in (None, 0)
@@ -47,6 +72,7 @@ class AgendarServicoUI:
         )
         id_horario = int(op_horario.split(" - ")[0])
 
+        # ============= AGENDAR =============
         if st.button("Confirmar Agendamento"):
             h = View.horario_listar_id(id_horario)
             if not h:
@@ -66,4 +92,8 @@ class AgendarServicoUI:
                 h.get_id_profissional()
             )
 
-            st.success(f"Serviço '{servico.get_descricao()}' agendado com {profissional.get_nome()} em {h.get_data()}")
+            st.success(
+                f"Serviço '{servico.get_descricao()}' agendado com {profissional.get_nome()} "
+                f"em {h.get_data().strftime('%d/%m/%Y %H:%M')}."
+            )
+            st.balloons()

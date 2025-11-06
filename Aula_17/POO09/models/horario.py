@@ -59,25 +59,22 @@ class HorarioDAO(DAO):
     def abrir(cls):
         cls._objetos = []
         try:
-            with open(cls.arquivo, mode="r", encoding="utf-8") as arquivo:
-                lista = json.load(arquivo)
+            with open(cls.arquivo, mode="r", encoding="utf-8") as arq:
+                lista = json.load(arq)
                 for dic in lista:
-                    try:
-                        cls._objetos.append(Horario.from_json(dic))
-                    except ValueError as e:
-                        print(f"[AVISO] Horário inválido ignorado: {dic} - Erro: {e}")
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            print(f"[INFO] Arquivo de horários não encontrado ou inválido: {e}")
+                    cls._objetos.append(Horario.from_json(dic))
+        except (FileNotFoundError, json.JSONDecodeError):
             cls._objetos = []
 
-    @classmethod 
+    @classmethod
     def salvar(cls):
         try:
-            with open(cls.arquivo, mode="w", encoding="utf-8") as arquivo:
-                json.dump([o.to_json() for o in cls._objetos], arquivo, indent=2, ensure_ascii=False)
+            with open(cls.arquivo, mode="w", encoding="utf-8") as arq:
+                json.dump([o.to_json() for o in cls._objetos], arq, indent=2, ensure_ascii=False)
         except Exception as e:
             print(f"[ERRO] Falha ao salvar horários: {e}")
 
+    # 🔹 Métodos específicos (mantidos do sistema original)
     @classmethod
     def listar_agenda_cliente(cls, id_cliente):
         return [h for h in cls.listar() if h.get_id_cliente() == id_cliente]
@@ -101,6 +98,4 @@ class HorarioDAO(DAO):
 
     @classmethod
     def ordenar_por_data(cls, lista, reverso=False):
-        return sorted(lista, 
-                     key=lambda h: h.get_data(),
-                     reverse=reverso)
+        return sorted(lista, key=lambda h: h.get_data(), reverse=reverso)

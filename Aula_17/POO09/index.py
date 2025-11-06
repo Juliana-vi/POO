@@ -8,6 +8,7 @@ from templates.loginUI import LoginUI
 from templates.perfilclienteUI import PerfilClienteUI
 from templates.perfilprofissionalUI import PerfilProfissionalUI
 from templates.agendarservicoUI import AgendarServicoUI
+from templates.avaliarprofissionalUI import AvaliarProfissionalUI
 from views import View
 
 class IndexUI:
@@ -125,6 +126,7 @@ class IndexUI:
     @staticmethod
     def main():
         st.title("Sistema de Agendamentos")
+        View.cliente_criar_admin()
         IndexUI.sidebar()
 
 if __name__ == "__main__":
