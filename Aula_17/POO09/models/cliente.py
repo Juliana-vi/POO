@@ -1,4 +1,5 @@
 import json
+from models.dao import DAO
 
 class Cliente:
     def __init__(self, cliente_id, nome, email, fone, senha):
@@ -54,57 +55,13 @@ class Cliente:
             dic.get("senha", "")
         )
 
-
-class ClienteDAO:
-    __objetos = []
-
-    @classmethod
-    def inserir(cls, obj):
-        cls.abrir()
-        max_id = 0
-        for aux in cls.__objetos:
-            if aux.get_id() > max_id:
-                max_id = aux.get_id()
-        obj.set_id(max_id + 1)
-        cls.__objetos.append(obj)
-        cls.salvar()
-
-    @classmethod
-    def listar(cls):
-        cls.abrir()
-        return cls.__objetos.copy()
-
-    @classmethod
-    def listar_id(cls, cliente_id):
-        cls.abrir()
-        for obj in cls.__objetos:
-            if obj.get_id() == cliente_id:
-                return obj
-        return None
-
-    @classmethod
-    def atualizar(cls, obj):
-        cls.abrir()
-        existente = cls.listar_id(obj.get_id())
-        if existente is not None:
-            cls.__objetos.remove(existente)
-            cls.__objetos.append(obj)
-            cls.salvar()
-
-    @classmethod
-    def excluir(cls, obj):
-        cls.abrir()
-        existente = cls.listar_id(obj.get_id())
-        if existente is not None:
-            cls.__objetos.remove(existente)
-            cls.salvar()
-
+class ClienteDAO(DAO):
     @classmethod
     def abrir(cls):
         cls.__objetos = []
         try:
-            with open("clientes.json", "r") as f:
-                lista = json.load(f)
+            with open("clientes.json", mode= "r") as arquivo:
+                lista = json.load(arquivo)
                 for dic in lista:
                     try:
                       cls.__objetos.append(Cliente.from_json(dic))
@@ -116,17 +73,7 @@ class ClienteDAO:
     @classmethod
     def salvar(cls):
         try:
-            with open("clientes.json", "w") as f:
-                json.dump([o.to_json() for o in cls.__objetos], f, indent=2)
+            with open("clientes.json", mode= "w") as arquivo:
+                json.dump([o.to_json() for o in cls.__objetos], arquivo, indent=2)
         except Exception as e:
             print("Erro ao salvar clientes:", e)
-
-    @staticmethod
-    def alterar_senha(id_cliente, senha_antiga, nova_senha):
-        lista = Cliente.abrir()
-        for c in lista:
-            if c._Cliente__id == id_cliente and c._Cliente__senha == senha_antiga:
-                c._Cliente__senha = nova_senha
-                Cliente.salvar(lista)
-                return True
-        return False

@@ -37,6 +37,13 @@ class ManterServicoUI:
         descricao = st.text_input("Descrição do Serviço")
         valor = st.number_input("Valor", min_value=0.0, format="%.2f")
         if st.button("Inserir Serviço"):
+            try:
+                View.servico_inserir(descricao, float(valor))
+                st.success("Serviço inserido com sucesso!")
+            except ValueError as erro:
+                st.error(erro)
+            time.sleep(2)
+            st.rerun()
             if descricao.strip():
                 View.servico_inserir(descricao, valor)
                 st.success("Serviço inserido com sucesso!")
@@ -74,6 +81,11 @@ class ManterServicoUI:
         id = int(opcao.split(" - ")[0])
 
         if st.button("Excluir Serviço"):
-            View.servico_excluir(id)
-            st.success("Serviço excluído com sucesso!")
+            try:
+                id = op.get_id()
+                View.servico_excluir(id)
+                st.success("Serviço excluído com sucesso!")
+            except ValueError as erro:
+                st.error(erro)
+            time.sleep(2)
             st.rerun()
