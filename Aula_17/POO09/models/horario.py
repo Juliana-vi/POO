@@ -1,5 +1,7 @@
 from datetime import datetime
 import json
+from pathlib import Path
+from models.dao import DAO
 
 class Horario:
     def __init__(self, id, data):
@@ -50,24 +52,81 @@ class Horario:
         horario.set_id_profissional(dic.get("id_profissional", 0))
         return horario
 
+class HorarioDAO(DAO):
+    arquivo = str(Path(__file__).parent.parent / "horarios.json")
 
-class HorarioDAO:
     @classmethod
     def abrir(cls):
-        cls.__objetos = []
+        p = Path(cls.arquivo)
+        if not p.exists():
+            cls._objetos = []
+            return cls._objetos
         try:
-            with open("horarios.json", mode="r") as arquivo:
-                list_dic = json.load(arquivo)
-                for dic in list_dic:
-                    try:
-                      obj = Horario.from_json(dic)
-                      cls.__objetos.append(obj)
-                    except ValueError:
-                      print(f"[AVISO] Horário inválido ignorado: {dic}")
-        except FileNotFoundError:
-            pass
+            with p.open("r", encoding="utf-8") as f:
+                cls._objetos = json.load(f)
+                return cls._objetos
+        except Exception:
+            cls._objetos = []
+            return cls._objetos
 
     @classmethod
     def salvar(cls):
-        with open("horarios.json", mode="w") as arquivo:
-            json.dump(cls.__objetos, arquivo, default=Horario.to_json)
+        p = Path(cls.arquivo)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with p.open("w", encoding="utf-8") as f:
+            json.dump(cls._objetos, f, indent=2, ensure_ascii=False)
+
+    @staticmethod
+    def listar_agenda_cliente(id_cliente):
+        lista = HorarioDAO.abrir()
+        def get_id_cliente(a):
+            try:
+                return a.get_id_cliente()
+            except Exception:
+                return a.get("id_cliente") if isinstance(a, dict) else getattr(a, "_AgendarServico__id_cliente", None)
+        return [a for a in lista if get_id_cliente(a) == id_cliente]
+
+    @staticmethod
+    def listar_agenda_profissional(id_prof):
+        lista = HorarioDAO.abrir()
+        def get_id_prof(a):
+            try:
+                return a.get_id_profissional()
+            except Exception:
+                return a.get("id_profissional") if isinstance(a, dict) else getattr(a, "_AgendarServico__id_profissional", None)
+        return [a for a in lista if get_id_prof(a) == id_prof]
+
+    @staticmethod
+    def confirmar_servico(id_agendamento):
+        lista = HorarioDAO.abrir()
+        changed = False
+        for a in lista:
+            aid = None
+            try:
+                aid = a.get_id()
+            except Exception:
+                aid = a.get("id") if isinstance(a, dict) else getattr(a, "_AgendarServico__id", None)
+            if aid == id_agendamento:
+                # marca confirmado
+                if isinstance(a, dict):
+                    a["confirmado"] = True
+                else:
+                    try:
+                        a.set_confirmado(True)
+                    except Exception:
+                        setattr(a, "_AgendarServico__confirmado", True)
+                changed = True
+        if changed:
+            HorarioDAO.salvar()
+        return changed
+
+    @staticmethod
+    def filtrar_por_data(lista, data_str):
+        return [a for a in lista if (a.get("data") if isinstance(a, dict) else getattr(a, "get_data", lambda: getattr(a, "_AgendarServico__data", None))()) == data_str]
+
+    @staticmethod
+    def ordenar_por_data(lista, reverso=False):
+        def key(a):
+            d = a.get("data") if isinstance(a, dict) else getattr(a, "get_data", lambda: getattr(a, "_AgendarServico__data", None))()
+            return datetime.strptime(d, "%Y-%m-%d") if d else datetime.min
+        return sorted(lista, key=key, reverse=reverso)

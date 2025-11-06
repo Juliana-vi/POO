@@ -1,5 +1,6 @@
 import json
 from models.dao import DAO
+from pathlib import Path
 
 class Cliente:
     def __init__(self, cliente_id, nome, email, fone, senha):
@@ -56,24 +57,36 @@ class Cliente:
         )
 
 class ClienteDAO(DAO):
+    arquivo = str(Path(__file__).parent.parent / "clientes.json")
+    
+    @staticmethod
+    def alterar_senha(id_cliente, senha_antiga, nova_senha):
+        lista = ClienteDAO.listar()
+        for c in lista:
+            if c.get_id() == id_cliente and c.get_senha() == senha_antiga:
+                c.set_senha(nova_senha)
+                ClienteDAO.salvar()
+                return True
+        return False
+    
     @classmethod
     def abrir(cls):
-        cls.__objetos = []
+        cls._objetos = []
         try:
-            with open("clientes.json", mode= "r") as arquivo:
+            with open(cls.arquivo, mode="r") as arquivo:
                 lista = json.load(arquivo)
                 for dic in lista:
                     try:
-                      cls.__objetos.append(Cliente.from_json(dic))
+                        cls._objetos.append(Cliente.from_json(dic))
                     except ValueError:
-                      print(f"[AVISO] Cliente inválido ignorado: {dic}")
+                        print(f"[AVISO] Cliente inválido ignorado: {dic}")
         except (FileNotFoundError, json.JSONDecodeError):
-            cls.__objetos = []
+            cls._objetos = []
 
-    @classmethod
+    @classmethod 
     def salvar(cls):
         try:
-            with open("clientes.json", mode= "w") as arquivo:
-                json.dump([o.to_json() for o in cls.__objetos], arquivo, indent=2)
+            with open(cls.arquivo, mode="w") as arquivo:
+                json.dump([o.to_json() for o in cls._objetos], arquivo, indent=2)
         except Exception as e:
             print("Erro ao salvar clientes:", e)
