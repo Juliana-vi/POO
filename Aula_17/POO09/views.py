@@ -3,6 +3,7 @@ from models.servico import Servico, ServicoDAO
 from models.horario import Horario, HorarioDAO
 from models.profissional import Profissional, ProfissionalDAO
 from datetime import datetime, timedelta
+from typing import List
 
 class View:
 
@@ -408,6 +409,20 @@ class View:
             key=lambda h: h.get_data(),
             reverse=(ordem == "desc")
         )
+    
+    @classmethod
+    def avaliar_profissional(cls, id_prof: int, id_cliente: int, nota: float, comentario: str) -> bool:
+        prof = cls.profissional_listar_id(id_prof)
+        if not prof:
+            return False
+            
+        prof.add_avaliacao(id_cliente, nota, comentario)
+        ProfissionalDAO.atualizar(prof)
+        return True
+
+    @classmethod
+    def listar_atendimentos_cliente(cls, id_cliente: int) -> List:
+        return HorarioDAO.listar_agenda_cliente(id_cliente)
 
     @staticmethod
     def alterar_senha(id_usuario, nova_senha, tipo):

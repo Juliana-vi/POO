@@ -72,13 +72,16 @@ class IndexUI:
     def menu_cliente():
         op = st.sidebar.selectbox("Menu do Cliente", [
             "Meus Dados",
-            "Agendar Serviço"
+            "Agendar Serviço",
+            "Avaliar Profissionais"
         ])
 
         if op == "Meus Dados":
             PerfilClienteUI.main()
         elif op == "Agendar Serviço":
             AgendarServicoUI.main()
+        elif op == "Avaliar Profissionais":
+            AvaliarProfissionalUI.main()
 
     @staticmethod
     def menu_profissional():

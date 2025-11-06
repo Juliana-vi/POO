@@ -1,4 +1,5 @@
 import json
+from typing import List, Dict
 
 class Profissional:
     def __init__(self, prof_id, nome, especialidade, conselho, email, senha):
@@ -10,6 +11,8 @@ class Profissional:
         self.__conselho = conselho
         self.__email = email
         self.__senha = senha
+        self.__avaliacoes: List[Dict] = []  # Lista de avaliações {cliente_id, nota, comentario}
+        self.__media_avaliacoes = 0.0
 
     def get_id(self): return self.__id
     def get_nome(self): return self.__nome
@@ -24,19 +27,42 @@ class Profissional:
     def set_email(self, email): self.__email = email
     def set_senha(self, senha): self.__senha = senha
 
-    def to_json(self):
+    def adicionar_avaliacao(self, cliente_id: int, nota: float, comentario: str) -> None:
+        self.__avaliacoes.append({
+            "cliente_id": cliente_id,
+            "nota": nota,
+            "comentario": comentario
+        })
+        self.__calcular_media()
+
+    def __calcular_media(self) -> None:
+        if not self.__avaliacoes:
+            self.__media_avaliacoes = 0.0
+            return
+        total = sum(av["nota"] for av in self.__avaliacoes)
+        self.__media_avaliacoes = total / len(self.__avaliacoes)
+
+    def get_avaliacoes(self) -> List[Dict]:
+        return self.__avaliacoes
+
+    def get_media_avaliacoes(self) -> float:
+        return self.__media_avaliacoes
+
+    def to_json(self) -> Dict:
         return {
             "id": self.__id,
             "nome": self.__nome,
             "especialidade": self.__especialidade,
             "conselho": self.__conselho,
             "email": self.__email,
-            "senha": self.__senha
+            "senha": self.__senha,
+            "avaliacoes": self.__avaliacoes,
+            "media_avaliacoes": self.__media_avaliacoes
         }
 
     @staticmethod
-    def from_json(dic):
-        return Profissional(
+    def from_json(dic: dict) -> 'Profissional':
+        prof = Profissional(
             dic.get("id", 0),
             dic.get("nome", ""),
             dic.get("especialidade", ""),
@@ -44,6 +70,9 @@ class Profissional:
             dic.get("email", ""),
             dic.get("senha", "")
         )
+        prof.__avaliacoes = dic.get("avaliacoes", [])
+        prof.__media_avaliacoes = dic.get("media_avaliacoes", 0.0)
+        return prof
 
 
 class ProfissionalDAO:
