@@ -31,12 +31,16 @@ class Profissional:
     def set_senha(self, senha): self.__senha = senha
 
     def add_avaliacao(self, cliente_id: int, nota: float, comentario: str):
-        self.__avaliacoes.append({
-            "cliente_id": cliente_id,
-            "nota": nota,
-            "comentario": comentario
-        })
-        self.__calcular_media()
+      for av in self.__avaliacoes:
+        if av["cliente_id"] == cliente_id:
+            return  # já avaliou, ignora
+      self.__avaliacoes.append({
+        "cliente_id": cliente_id,
+        "nota": nota,
+        "comentario": comentario.strip()
+    })
+      self.__calcular_media()
+
 
     def __calcular_media(self):
         if not self.__avaliacoes:

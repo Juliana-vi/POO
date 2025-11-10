@@ -12,18 +12,23 @@ class AvaliarProfissionalUI:
         if not atendimentos:
             st.info("Você ainda não teve nenhum atendimento para avaliar.")
             return
+        
+        # Evita repetições de profissionais
+        profissionais_avaliados = set()
 
         for atd in atendimentos:
-            prof = View.profissional_listar_id(atd.get_id_profissional())
-            if not prof:
-                continue
+          prof = View.profissional_listar_id(atd.get_id_profissional())
+          if not prof or prof.get_id() in profissionais_avaliados:
+           continue  # Pula se já mostrou esse profissional
 
-            st.subheader(f"Avaliar: {prof.get_nome()} ({prof.get_especialidade()})")
+          profissionais_avaliados.add(prof.get_id())
 
-            avaliacoes = prof.get_avaliacoes()
-            ja_avaliou = any(av["cliente_id"] == id_cliente for av in avaliacoes)
+          st.subheader(f"Avaliar: {prof.get_nome()} ({prof.get_especialidade()})")
 
-            if ja_avaliou:
+          avaliacoes = prof.get_avaliacoes()
+          ja_avaliou = any(av["cliente_id"] == id_cliente for av in avaliacoes)
+
+          if ja_avaliou:
                 st.info(f"✅ Você já avaliou este profissional.")
                 st.caption(f"Média atual: ⭐ {prof.get_media_avaliacoes():.1f} ({len(avaliacoes)} avaliações)")
                 continue

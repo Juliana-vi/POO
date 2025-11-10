@@ -10,16 +10,6 @@
     "media_avaliacoes": 0.0
   },
   {
-    "id": 3,
-    "nome": "dani",
-    "especialidade": "professora",
-    "conselho": "design",
-    "email": "dani@gmail.com",
-    "senha": "da",
-    "avaliacoes": [],
-    "media_avaliacoes": 0.0
-  },
-  {
     "id": 5,
     "nome": "leile",
     "especialidade": "consultora",
@@ -28,22 +18,6 @@
     "senha": "leila",
     "avaliacoes": [],
     "media_avaliacoes": 0.0
-  },
-  {
-    "id": 6,
-    "nome": "rosa",
-    "especialidade": "cardiologista",
-    "conselho": "cardiologia",
-    "email": "rosa@gmail.com",
-    "senha": "rosa",
-    "avaliacoes": [
-      {
-        "cliente_id": 36,
-        "nota": 4.5,
-        "comentario": "Acho ela uma ótima profissional, porém um pouco grossa às vezes"
-      }
-    ],
-    "media_avaliacoes": 4.5
   },
   {
     "id": 4,
@@ -57,6 +31,48 @@
         "cliente_id": 36,
         "nota": 5.0,
         "comentario": "Profissional excelente. Recomendo para todos."
+      }
+    ],
+    "media_avaliacoes": 5.0
+  },
+  {
+    "id": 6,
+    "nome": "rosa",
+    "especialidade": "cardiologista",
+    "conselho": "cardiologia",
+    "email": "rosa@gmail.com",
+    "senha": "rosa",
+    "avaliacoes": [
+      {
+        "cliente_id": 36,
+        "nota": 4.5,
+        "comentario": "Acho ela uma ótima profissional, porém um pouco grossa às vezes"
+      },
+      {
+        "cliente_id": 5,
+        "nota": 5.0,
+        "comentario": "Boa profissional"
+      },
+      {
+        "cliente_id": 5,
+        "nota": 5.0,
+        "comentario": "Boa profissional"
+      }
+    ],
+    "media_avaliacoes": 4.833333333333333
+  },
+  {
+    "id": 3,
+    "nome": "dani",
+    "especialidade": "professora",
+    "conselho": "design",
+    "email": "dani@gmail.com",
+    "senha": "dani",
+    "avaliacoes": [
+      {
+        "cliente_id": 7,
+        "nota": 5.0,
+        "comentario": "Muito atenciosa e simpática! Além de muito responsável."
       }
     ],
     "media_avaliacoes": 5.0
