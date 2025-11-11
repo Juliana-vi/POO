@@ -1,4 +1,3 @@
-# ...existing code...
 import json
 from datetime import datetime
 from pathlib import Path
@@ -114,7 +113,6 @@ class ProfissionalDAO(DAO):
         except Exception as e:
             print(f"[ERRO] Falha ao salvar profissionais: {e}")
 
-    # 🔹 Método específico: alterar senha
     @staticmethod
     def alterar_senha(id_prof, senha_antiga, nova_senha):
         lista = ProfissionalDAO.listar()
@@ -124,4 +122,3 @@ class ProfissionalDAO(DAO):
                 ProfissionalDAO.salvar()
                 return True
         return False
-# ...existing code...

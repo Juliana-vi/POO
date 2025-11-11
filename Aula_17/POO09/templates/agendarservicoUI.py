@@ -8,7 +8,6 @@ class AgendarServicoUI:
 
         id_cliente = st.session_state["usuario_id"]
 
-        # ============= SERVIÇOS DISPONÍVEIS =============
         servicos = View.servico_listar()
         if not servicos:
             st.warning("Nenhum serviço disponível no momento.")
@@ -21,7 +20,7 @@ class AgendarServicoUI:
         id_servico = int(servico_opcao.split(" - ")[0])
         servico = View.servico_listar_id(id_servico)
 
-        # ============= PROFISSIONAIS DISPONÍVEIS =============
+
         profissionais = View.profissional_listar()
         if not profissionais:
             st.warning("Nenhum profissional cadastrado no momento.")
@@ -34,7 +33,6 @@ class AgendarServicoUI:
         id_profissional = int(prof_opcao.split(" - ")[0])
         profissional = View.profissional_listar_id(id_profissional)
 
-        # ============= MOSTRAR AVALIAÇÕES DO PROFISSIONAL =============
         st.markdown("---")
         st.subheader(f"Avaliações de {profissional.get_nome()} ⭐")
 
@@ -56,7 +54,6 @@ class AgendarServicoUI:
                 )
                 st.markdown("---")
 
-        # ============= HORÁRIOS DISPONÍVEIS =============
         horarios = [
             h for h in View.profissional_visualizar_agenda(id_profissional)
             if h.get_id_cliente() in (None, 0)
@@ -72,7 +69,6 @@ class AgendarServicoUI:
         )
         id_horario = int(op_horario.split(" - ")[0])
 
-        # ============= AGENDAR =============
         if st.button("Confirmar Agendamento"):
             h = View.horario_listar_id(id_horario)
             if not h:

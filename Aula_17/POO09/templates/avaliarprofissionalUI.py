@@ -17,7 +17,6 @@ class AvaliarProfissionalUI:
                 return
             except Exception:
                 pass
-        # fallback mínimo: marcar flag para indicar que precisa de refresh
         st.session_state["_needs_rerun"] = True
 
     @staticmethod
@@ -30,12 +29,12 @@ class AvaliarProfissionalUI:
 
     @staticmethod
     def _prof_get(field, prof):
-        # extração compatível com objetos e dicts
+
         if prof is None:
             return None
         if hasattr(prof, field):
             try:
-                return getattr(prof, field)()  # método estilo get_nome()
+                return getattr(prof, field)() 
             except Exception:
                 pass
         if hasattr(prof, f"get_{field}"):
@@ -62,8 +61,7 @@ class AvaliarProfissionalUI:
             st.info("Você ainda não teve nenhum atendimento para avaliar.")
             return
 
-        # montar lista única de profissionais a partir dos atendimentos
-        prof_map = {}  # id -> objeto/dict
+        prof_map = {}  
         for atd in atendimentos:
             pid = AvaliarProfissionalUI._get_prof_id_from_atd(atd)
             if pid is None:
@@ -113,12 +111,9 @@ class AvaliarProfissionalUI:
                 sucesso = View.avaliar_profissional(prof_id, id_cliente, nota, comentario.strip())
                 if sucesso:
                     st.success("Avaliação enviada com sucesso.")
-                    # usar wrapper compatível em vez de chamar experimental_rerun direto
                     AvaliarProfissionalUI._try_rerun()
                     return
                 else:
-                    # tenta identificar motivo comum
-                    # se já houver avaliação do cliente, mostrar mensagem específica
                     avals_now = []
                     try:
                         p2 = View.profissional_listar_id(prof_id)

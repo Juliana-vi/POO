@@ -1,4 +1,3 @@
-# ...existing code...
 import streamlit as st
 from views import View
 
@@ -11,7 +10,6 @@ class LoginUI:
         if st.button("Entrar"):
             user = View.cliente_autenticar(email, senha)
             if user:
-                # aceita objeto (modelo) ou dict
                 if hasattr(user, "get_id"):
                     uid = user.get_id()
                     uname = user.get_nome() if hasattr(user, "get_nome") else getattr(user, "nome", "")
@@ -28,7 +26,6 @@ class LoginUI:
                 st.session_state["usuario_nome"] = uname
                 st.session_state["usuario_tipo"] = utype
                 st.success("Login realizado!")
-                # rerun compatível
                 if hasattr(st, "rerun"):
                     st.rerun()
                 elif hasattr(st, "experimental_rerun"):
@@ -60,4 +57,3 @@ class LoginUI:
                     st.experimental_rerun()
             else:
                 st.error("Credenciais inválidas.")
-# ...existing code...

@@ -18,9 +18,6 @@ class PerfilProfissionalUI:
             "Alterar Senha"
         ])
 
-        # =============================
-        # 📅 ABRIR AGENDA
-        # =============================
         if menu == "Abrir Agenda":
             st.subheader("Abrir Minha Agenda")
             st.write("Informe a data e os horários de atendimento que deseja disponibilizar:")
@@ -51,9 +48,6 @@ class PerfilProfissionalUI:
                 except ValueError as e:
                     st.error(f"Erro: {e}")
 
-        # =============================
-        # 📋 VISUALIZAR AGENDA
-        # =============================
         elif menu == "Visualizar Agenda":
             st.subheader("Minha Agenda")
             try:
@@ -76,9 +70,6 @@ class PerfilProfissionalUI:
             except ValueError as e:
                 st.error(f"Erro: {e}")
 
-        # =============================
-        # ✅ CONFIRMAR SERVIÇOS
-        # =============================
         elif menu == "Confirmar Serviço":
             st.subheader("Confirmar Serviço")
             try:
@@ -108,9 +99,6 @@ class PerfilProfissionalUI:
             except ValueError as e:
                 st.error(f"Erro: {e}")
 
-        # =============================
-        # ⭐ MINHAS AVALIAÇÕES (ANÔNIMAS)
-        # =============================
         elif menu == "Minhas Avaliações ⭐":
             st.subheader("Minhas Avaliações de Clientes")
 
@@ -129,7 +117,7 @@ class PerfilProfissionalUI:
                     st.divider()
 
                     for i, av in enumerate(sorted(avaliacoes, key=lambda x: -x["nota"]), start=1):
-                        nome_cli = f"Cliente Anônimo #{i}"  # 🔒 Nome oculto
+                        nome_cli = f"Cliente Anônimo #{i}" 
                         st.markdown(
                             f"**{nome_cli}** — ⭐ **{av['nota']:.1f}**  \n"
                             f"💬 *{av['comentario']}*"
@@ -139,10 +127,6 @@ class PerfilProfissionalUI:
             except Exception as e:
                 st.error(f"Erro ao carregar avaliações: {e}")
 
-
-        # =============================
-        # 🔒 ALTERAR SENHA
-        # =============================
         elif menu == "Alterar Senha":
             st.subheader("Alterar Senha")
             nova = st.text_input("Digite a nova senha", type="password")

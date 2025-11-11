@@ -25,14 +25,11 @@ class View:
                 email = None
             if email == "admin":
                 return True  # já existe
-
-        # criar admin com assinatura: Cliente(id, nome, email, fone, senha)
         try:
             admin = Cliente(0, "Administrador", "admin", "0000", "1234")
             ClienteDAO.inserir(admin)
             return True
         except Exception:
-            # fallback: inserir manualmente no DAO._objetos e salvar
             try:
                 ClienteDAO._objetos.append(admin)
                 ClienteDAO.salvar()
@@ -60,7 +57,6 @@ class View:
                 return c
         return None
 
-   # ...existing code...
     @staticmethod
     def alterar_senha_admin(id_admin, nova_senha):
         """
@@ -74,7 +70,6 @@ class View:
             lista = []
 
         updated = False
-        # se id_admin é válido, tenta atualizar por id primeiro
         try:
             if id_admin is not None:
                 try:
@@ -94,7 +89,6 @@ class View:
         except Exception:
             pass
 
-        # se não atualizou por id, atualiza todos os registros com email 'admin'
         if not updated:
             for c in lista:
                 try:
@@ -113,18 +107,15 @@ class View:
 
         if updated:
             try:
-                # persiste alterações
                 ClienteDAO.salvar()
             except Exception:
                 try:
-                    # fallback: usar atualizar por objeto
                     for c in lista:
                         if hasattr(c, "get_id"):
                             ClienteDAO.atualizar(c)
                 except Exception:
                     pass
         return updated
-# ...existing code...
 
     def cliente_listar():
         r = ClienteDAO.listar()
@@ -498,49 +489,40 @@ class View:
             reverse=(ordem == "desc")
         )
     
-    # ...existing code...
     @classmethod
     def avaliar_profissional(cls, id_prof, id_cliente, nota, comentario):
         """
         Valida e registra uma avaliação para o profissional.
         Retorna True se a avaliação foi registrada com sucesso, False caso contrário.
         """
-        # valida nota
         try:
             nota_f = float(nota)
         except Exception:
             return False
         if nota_f < 0 or nota_f > 5:
             return False
-
-        # valida comentário (exige texto não vazio)
+        
         if comentario is None or not str(comentario).strip():
             return False
-
-        # busca profissional
+        
         prof = cls.profissional_listar_id(id_prof) if hasattr(cls, "profissional_listar_id") else ProfissionalDAO.listar_id(id_prof)
         if not prof:
             return False
-
-        # pega avaliações existentes (compatível com diferentes chaves)
+        
         try:
             avaliacoes = prof.get_avaliacoes() if hasattr(prof, "get_avaliacoes") else (prof.get("avaliacoes") if isinstance(prof, dict) else [])
         except Exception:
             avaliacoes = []
 
-        # evita avaliação duplicada pelo mesmo cliente
         for av in avaliacoes or []:
             if av is None:
                 continue
             if av.get("id_cliente") == id_cliente or av.get("cliente_id") == id_cliente:
                 return False
-
-        # adiciona avaliação ao objeto
         try:
             if hasattr(prof, "add_avaliacao"):
                 prof.add_avaliacao(id_cliente, nota_f, comentario)
             else:
-                # caso seja dict
                 aval = {
                     "id_cliente": id_cliente,
                     "cliente_id": id_cliente,
@@ -553,46 +535,15 @@ class View:
         except Exception:
             return False
 
-        # tenta persistir via DAO, se existir
         try:
             ProfissionalDAO.atualizar(prof)
         except Exception:
             try:
-                # se for dict/list, persistir manualmente regravando todos
                 ProfissionalDAO.salvar()
             except Exception:
                 pass
 
         return True
-# ...existing code...
-
-    #@classmethod
-   # def avaliar_profissional(cls, id_prof, id_cliente, nota, comentario):
-   #     ProfissionalDAO.abrir()  # garante que a lista está carregada
-
- #      prof = cls.profissional_listar_id(id_prof)
- #      if not prof:
-  #      print(f"[ERRO] Profissional com id={id_prof} não encontrado.")
- #       return False
-
-
- #      prof.add_avaliacao(id_cliente, nota, comentario)
-
- #      lista = ProfissionalDAO.listar()
- #      atualizado = False
-
- #      for i, p in enumerate(lista):
-#          if p.get_id() == prof.get_id():
- #           lista[i] = prof
- #           atualizado = True
- #           break
-
- #      if not atualizado:
- #       print(f"[ERRO] Profissional {prof.get_nome()} não estava na lista do DAO.")
- #       return False
-
- #      ProfissionalDAO.salvar()
- #      return True
 
     @classmethod
     def listar_atendimentos_cliente(cls, id_cliente: int) -> List:
@@ -650,14 +601,13 @@ class View:
             return False
 
         elif tipo == "a":
-    # Garante que o admin exista
           View.cliente_criar_admin()
           lista = ClienteDAO.listar()
           for c in lista:
             if hasattr(c, "get_email") and c.get_email() == "admin":
               c.set_senha(nova_senha)
               ClienteDAO.atualizar(c)
-              ClienteDAO.salvar()  # ✅ garante gravação imediata
+              ClienteDAO.salvar() 
               return True
             elif isinstance(c, dict) and (c.get("email") == "admin" or c.get("_Cliente__email") == "admin"):
               c["senha"] = nova_senha
