@@ -3,77 +3,109 @@ from views import View
 
 class AvaliarProfissionalUI:
     @staticmethod
+    def _get_prof_id_from_atd(atd):
+        if hasattr(atd, "get_id_profissional"):
+            return atd.get_id_profissional()
+        if isinstance(atd, dict):
+            return atd.get("id_profissional") or atd.get("id_prof")
+        return None
+
+    @staticmethod
+    def _prof_get(field, prof):
+        # extração compatível com objetos e dicts
+        if prof is None:
+            return None
+        if hasattr(prof, field):
+            try:
+                return getattr(prof, field)()  # método estilo get_nome()
+            except Exception:
+                pass
+        if hasattr(prof, f"get_{field}"):
+            try:
+                return getattr(prof, f"get_{field}")()
+            except Exception:
+                pass
+        if isinstance(prof, dict):
+            return prof.get(field) or prof.get(f"_{prof.__class__.__name__}__{field}")
+        return None
+
+    @staticmethod
     def main():
         st.header("Avaliar Profissional")
-        
+
         if "usuario_id" not in st.session_state:
             st.info("Faça login para avaliar profissionais.")
             return
 
         id_cliente = st.session_state["usuario_id"]
-        atendimentos = View.listar_atendimentos_cliente(id_cliente)
-        
+        atendimentos = View.listar_atendimentos_cliente(id_cliente) or []
+
         if not atendimentos:
             st.info("Você ainda não teve nenhum atendimento para avaliar.")
             return
-        
-        # Evita repetições de profissionais
-        profissionais_mostrados = set()
 
+        # montar lista única de profissionais a partir dos atendimentos
+        prof_map = {}  # id -> objeto/dict
         for atd in atendimentos:
-            prof = View.profissional_listar_id(atd.get_id_profissional())
-            if not prof:
+            pid = AvaliarProfissionalUI._get_prof_id_from_atd(atd)
+            if pid is None:
                 continue
-            if prof.get_id() in profissionais_mostrados:
-                continue  # já mostrado esse profissional
-            profissionais_mostrados.add(prof.get_id())
-
-            st.subheader(f"Avaliar: {prof.get_nome()} ({prof.get_especialidade()})")
-
-            avaliacoes = prof.get_avaliacoes() or []
-            # aceita chaves "cliente_id" ou "id_cliente"
-            ja_avaliou = any(
-                (av.get("cliente_id") == id_cliente) or (av.get("id_cliente") == id_cliente)
-                for av in avaliacoes
-            )
-
-            st.caption(f"Média atual: ⭐ {prof.get_media_avaliacoes():.1f} ({len(avaliacoes)} avaliações)")
-
-            if ja_avaliou:
-                st.info("✅ Você já avaliou este profissional.")
+            prof = View.profissional_listar_id(pid)
+            if prof is None:
                 continue
+            prof_map[int(pid)] = prof
 
-            # chave única por profissional/atendimento
-            key_base = f"prof_{prof.get_id()}_atd_{atd.get_id()}"
+        if not prof_map:
+            st.warning("Nenhum profissional válido encontrado nos seus atendimentos.")
+            return
 
-            nota = st.slider(
-                f"Nota para {prof.get_nome()}",
-                0.0, 5.0, 5.0, 0.5,
-                key=f"{key_base}_nota"
-            )
-            comentario = st.text_area(
-                f"Comentário sobre {prof.get_nome()}",
-                key=f"{key_base}_comentario"
-            )
+        labels = [f"{AvaliarProfissionalUI._prof_get('nome', p)} ({AvaliarProfissionalUI._prof_get('especialidade', p) or ''})" for p in prof_map.values()]
+        ids = list(prof_map.keys())
+        selection_index = st.selectbox("Selecione o profissional:", range(len(labels)), format_func=lambda i: labels[i])
+        prof_id = ids[selection_index]
+        prof = prof_map[prof_id]
 
-            btn_key = f"{key_base}_btn"
-            clicked = st.button(f"Enviar Avaliação para {prof.get_nome()}", key=btn_key)
+        # verificar se já avaliou
+        avals = []
+        try:
+            avals = prof.get_avaliacoes() if hasattr(prof, "get_avaliacoes") else (prof.get("avaliacoes") if isinstance(prof, dict) else [])
+        except Exception:
+            avals = []
+        ja_avaliou = any((av.get("cliente_id") == id_cliente or av.get("id_cliente") == id_cliente) for av in (avals or []))
 
-            if clicked:
-                sucesso = View.avaliar_profissional(
-                    prof.get_id(),
-                    id_cliente,
-                    nota,
-                    comentario
-                )
+        st.subheader(f"Avaliar: {AvaliarProfissionalUI._prof_get('nome', prof)}")
+        media = 0.0
+        try:
+            media = prof.get_media_avaliacoes() if hasattr(prof, "get_media_avaliacoes") else (float(prof.get("media", 0)) if isinstance(prof, dict) else 0.0)
+        except Exception:
+            media = 0.0
+        st.caption(f"Média atual: ⭐ {media:.1f} ({len(avals or [])} avaliações)")
 
+        if ja_avaliou:
+            st.info("✅ Você já avaliou este profissional.")
+            return
+
+        nota = st.slider("Nota", 0.0, 5.0, 5.0, 0.5, key=f"nota_{prof_id}")
+        comentario = st.text_area("Comentário", key=f"comentario_{prof_id}")
+
+        if st.button("Enviar Avaliação"):
+            if comentario is None or not comentario.strip():
+                st.warning("Digite um comentário antes de enviar a avaliação.")
+            else:
+                sucesso = View.avaliar_profissional(prof_id, id_cliente, nota, comentario.strip())
                 if sucesso:
-                    prof_atualizado = View.profissional_listar_id(prof.get_id())
-                    media = prof_atualizado.get_media_avaliacoes()
-                    qtd = len(prof_atualizado.get_avaliacoes() or [])
-                    st.success(
-                        f"Avaliação enviada com sucesso! ⭐ Média atual: {media:.1f} ({qtd} avaliações)."
-                    )
+                    st.success("Avaliação enviada com sucesso.")
                     st.experimental_rerun()
                 else:
-                    st.error("Erro ao enviar avaliação. Tente novamente.")
+                    # tenta identificar motivo comum
+                    # se já houver avaliação do cliente, mostrar mensagem específica
+                    avals_now = []
+                    try:
+                        p2 = View.profissional_listar_id(prof_id)
+                        avals_now = p2.get_avaliacoes() if hasattr(p2, "get_avaliacoes") else (p2.get("avaliacoes") if isinstance(p2, dict) else [])
+                    except Exception:
+                        avals_now = []
+                    if any((av.get("cliente_id") == id_cliente or av.get("id_cliente") == id_cliente) for av in (avals_now or [])):
+                        st.info("Você já avaliou este profissional.")
+                    else:
+                        st.error("Erro ao enviar avaliação. Verifique se todos os dados estão corretos e tente novamente.")
