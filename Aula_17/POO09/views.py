@@ -10,8 +10,8 @@ class View:
     @staticmethod
     def cliente_criar_admin():
         """
-        Garante que exista um cliente 'admin' (email 'admin'). Se não existir, cria com senha '1234'.
-        Não cria duplicatas.
+        Garante que exista um cliente com email 'admin'.
+        Se não existir, cria com senha '1234'. Não cria duplicatas.
         """
         try:
             lista = ClienteDAO.listar() or []
@@ -19,55 +19,88 @@ class View:
             lista = []
 
         for c in lista:
-            # aceita objetos Cliente ou dicts
             try:
                 email = c.get_email() if hasattr(c, "get_email") else (c.get("email") if isinstance(c, dict) else None)
             except Exception:
-               email = None
+                email = None
             if email == "admin":
-                return  # já existe
+                return True  # já existe
 
-        # criar admin (DAO.inserir vai atribuir id sequencial)
-        admin = Cliente(0, "Administrador", "admin", "0000", "1234")  # ajuste campos conforme sua assinatura de Cliente
+        # criar admin com assinatura: Cliente(id, nome, email, fone, senha)
         try:
+            admin = Cliente(0, "Administrador", "admin", "0000", "1234")
             ClienteDAO.inserir(admin)
+            return True
         except Exception:
-            # tentar persistir manualmente se inserir falhar
+            # fallback: inserir manualmente no DAO._objetos e salvar
             try:
                 ClienteDAO._objetos.append(admin)
                 ClienteDAO.salvar()
+                return True
             except Exception:
-                pass
-
+                return False
 
     @staticmethod
     def cliente_autenticar(email, senha):
+        """
+        Autentica cliente retornando o objeto Cliente se ok, ou None.
+        """
+        try:
+            lista = ClienteDAO.listar() or []
+        except Exception:
+            lista = []
 
-      clientes = View.cliente_listar()
-
-      def extrair(c):
-        if hasattr(c, "get_email"):
-            return c.get_email(), c.get_senha()
-        elif isinstance(c, dict):
-            return c.get("email") or c.get("_Cliente__email"), c.get("senha") or c.get("_Cliente__senha")
-        return None, None
-
-      if email == "admin":
-        for c in clientes:
-            em, pw = extrair(c)
-            if em == "admin" and pw == senha:
-                id_val = c.get_id() if hasattr(c, "get_id") else 0
-                return {"id": id_val, "nome": "admin", "tipo": "a"}
+        for c in lista:
+            try:
+                c_email = c.get_email() if hasattr(c, "get_email") else (c.get("email") if isinstance(c, dict) else None)
+                c_senha = c.get_senha() if hasattr(c, "get_senha") else (c.get("senha") if isinstance(c, dict) else None)
+            except Exception:
+                continue
+            if c_email == email and str(c_senha) == str(senha):
+                return c
         return None
 
-      for c in clientes:
-        em, pw = extrair(c)
-        if em == email and pw == senha:
-            id_val = c.get_id() if hasattr(c, "get_id") else None
-            nome = c.get_nome() if hasattr(c, "get_nome") else em
-            return {"id": id_val, "nome": nome, "tipo": "c"}
+    @staticmethod
+    def alterar_senha_admin(id_admin, nova_senha):
+        """
+        Altera a senha do administrador (procura por id). Retorna True se atualizada.
+        Usa ClienteDAO.atualizar para persistir.
+        """
+        if id_admin is None:
+            return False
+        try:
+            id_int = int(id_admin)
+        except Exception:
+            return False
 
-      return None
+        try:
+            admin = ClienteDAO.listar_id(id_int)
+        except Exception:
+            # tentar carregar manualmente
+            try:
+                lista = ClienteDAO.listar() or []
+                admin = next((c for c in lista if (c.get_id() if hasattr(c, "get_id") else c.get("id")) == id_int), None)
+            except Exception:
+                admin = None
+
+        if not admin:
+            return False
+
+        try:
+            if hasattr(admin, "set_senha"):
+                admin.set_senha(nova_senha)
+            else:
+                admin["senha"] = nova_senha
+            ClienteDAO.atualizar(admin)
+            # garantir gravação
+            try:
+                ClienteDAO.salvar()
+            except Exception:
+                pass
+            return True
+        except Exception:
+            return False
+# ...existing code...
 
     def cliente_listar():
         r = ClienteDAO.listar()
