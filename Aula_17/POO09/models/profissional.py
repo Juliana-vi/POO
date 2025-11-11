@@ -1,5 +1,6 @@
+# ...existing code...
 import json
-import datetime
+from datetime import datetime
 from pathlib import Path
 from typing import List, Dict
 from models.dao import DAO
@@ -8,28 +9,28 @@ class Profissional:
     def __init__(self, prof_id, nome, especialidade, conselho, email, senha):
         if not nome or not email or not senha:
             raise ValueError("Profissional deve ter nome, email e senha válidos.")
-        self.__id = prof_id
-        self.__nome = nome
-        self.__especialidade = especialidade
-        self.__conselho = conselho
-        self.__email = email
-        self.__senha = senha
-        self.__avaliacoes: List[Dict] = []
-        self.__media_avaliacoes = 0.0
+        self._id = prof_id
+        self._nome = nome
+        self._especialidade = especialidade
+        self._conselho = conselho
+        self._email = email
+        self._senha = senha
+        self._avaliacoes: List[Dict] = []
+        self._media_avaliacoes = 0.0
 
-    def get_id(self): return self.__id
-    def get_nome(self): return self.__nome
-    def get_especialidade(self): return self.__especialidade
-    def get_conselho(self): return self.__conselho
-    def get_email(self): return self.__email
-    def get_senha(self): return self.__senha
+    def get_id(self): return self._id
+    def get_nome(self): return self._nome
+    def get_especialidade(self): return self._especialidade
+    def get_conselho(self): return self._conselho
+    def get_email(self): return self._email
+    def get_senha(self): return self._senha
 
-    def set_id(self, i): self.__id = i
-    def set_nome(self, nome): self.__nome = nome
-    def set_especialidade(self, especialidade): self.__especialidade = especialidade
-    def set_conselho(self, conselho): self.__conselho = conselho
-    def set_email(self, email): self.__email = email
-    def set_senha(self, senha): self.__senha = senha
+    def set_id(self, i): self._id = i
+    def set_nome(self, nome): self._nome = nome
+    def set_especialidade(self, especialidade): self._especialidade = especialidade
+    def set_conselho(self, conselho): self._conselho = conselho
+    def set_email(self, email): self._email = email
+    def set_senha(self, senha): self._senha = senha
 
     def add_avaliacao(self, id_cliente, nota, comentario):
         if not hasattr(self, "_avaliacoes") or self._avaliacoes is None:
@@ -52,23 +53,29 @@ class Profissional:
         if not avals:
             self._media_avaliacoes = 0.0
             return
-        total = sum(float(a.get("nota", 0)) for a in avals)
-        self._media_avaliacoes = total / len(avals)
+        total = 0.0
+        count = 0
+        for a in avals:
+            try:
+                total += float(a.get("nota", 0))
+                count += 1
+            except Exception:
+                continue
+        self._media_avaliacoes = (total / count) if count > 0 else 0.0
 
     def get_media_avaliacoes(self):
         return getattr(self, "_media_avaliacoes", 0.0)
-# ...existing code...
 
     def to_json(self):
         return {
-            "id": self.__id,
-            "nome": self.__nome,
-            "especialidade": self.__especialidade,
-            "conselho": self.__conselho,
-            "email": self.__email,
-            "senha": self.__senha,
-            "avaliacoes": self.__avaliacoes,
-            "media_avaliacoes": self.__media_avaliacoes
+            "id": self._id,
+            "nome": self._nome,
+            "especialidade": self._especialidade,
+            "conselho": self._conselho,
+            "email": self._email,
+            "senha": self._senha,
+            "avaliacoes": self._avaliacoes,
+            "media_avaliacoes": self._media_avaliacoes
         }
 
     @staticmethod
@@ -81,8 +88,8 @@ class Profissional:
             dic.get("email", ""),
             dic.get("senha", "")
         )
-        p.__avaliacoes = dic.get("avaliacoes", [])
-        p.__media_avaliacoes = dic.get("media_avaliacoes", 0.0)
+        p._avaliacoes = dic.get("avaliacoes", []) or []
+        p._media_avaliacoes = dic.get("media_avaliacoes", 0.0)
         return p
 
 class ProfissionalDAO(DAO):
@@ -117,3 +124,4 @@ class ProfissionalDAO(DAO):
                 ProfissionalDAO.salvar()
                 return True
         return False
+# ...existing code...

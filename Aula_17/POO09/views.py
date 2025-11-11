@@ -7,16 +7,37 @@ from typing import List
 
 class View:
 
+    @staticmethod
     def cliente_criar_admin():
-      clientes = ClienteDAO.listar()
-      for c in clientes:
-        if hasattr(c, "get_email") and c.get_email() == "admin":
-            return
-        elif isinstance(c, dict) and (c.get("email") == "admin" or c.get("_Cliente__email") == "admin"):
-            return
-    # se não existir, cria
-    admin = Cliente(0, "admin", "admin", "fone", "1234")
-    ClienteDAO.inserir(admin)
+        """
+        Garante que exista um cliente 'admin' (email 'admin'). Se não existir, cria com senha '1234'.
+        Não cria duplicatas.
+        """
+        try:
+            lista = ClienteDAO.listar() or []
+        except Exception:
+            lista = []
+
+        for c in lista:
+            # aceita objetos Cliente ou dicts
+            try:
+                email = c.get_email() if hasattr(c, "get_email") else (c.get("email") if isinstance(c, dict) else None)
+            except Exception:
+               email = None
+            if email == "admin":
+                return  # já existe
+
+        # criar admin (DAO.inserir vai atribuir id sequencial)
+        admin = Cliente(0, "Administrador", "admin", "0000", "1234")  # ajuste campos conforme sua assinatura de Cliente
+        try:
+            ClienteDAO.inserir(admin)
+        except Exception:
+            # tentar persistir manualmente se inserir falhar
+            try:
+                ClienteDAO._objetos.append(admin)
+                ClienteDAO.salvar()
+            except Exception:
+                pass
 
 
     @staticmethod
@@ -423,29 +444,75 @@ class View:
     # ...existing code...
     @classmethod
     def avaliar_profissional(cls, id_prof, id_cliente, nota, comentario):
-      try:
-        nota_f = float(nota)
-        if nota_f < 0 or nota_f > 5 or not comentario.strip():
+        """
+        Valida e registra uma avaliação para o profissional.
+        Retorna True se a avaliação foi registrada com sucesso, False caso contrário.
+        """
+        # valida nota
+        try:
+            nota_f = float(nota)
+        except Exception:
+            return False
+        if nota_f < 0 or nota_f > 5:
             return False
 
-        prof = cls.profissional_listar_id(id_prof)
+        # valida comentário (exige texto não vazio)
+        if comentario is None or not str(comentario).strip():
+            return False
+
+        # busca profissional
+        prof = cls.profissional_listar_id(id_prof) if hasattr(cls, "profissional_listar_id") else ProfissionalDAO.listar_id(id_prof)
         if not prof:
             return False
 
-        if any(av.get("cliente_id") == id_cliente for av in prof.get_avaliacoes() or []):
+        # pega avaliações existentes (compatível com diferentes chaves)
+        try:
+            avaliacoes = prof.get_avaliacoes() if hasattr(prof, "get_avaliacoes") else (prof.get("avaliacoes") if isinstance(prof, dict) else [])
+        except Exception:
+            avaliacoes = []
+
+        # evita avaliação duplicada pelo mesmo cliente
+        for av in avaliacoes or []:
+            if av is None:
+                continue
+            if av.get("id_cliente") == id_cliente or av.get("cliente_id") == id_cliente:
+                return False
+
+        # adiciona avaliação ao objeto
+        try:
+            if hasattr(prof, "add_avaliacao"):
+                prof.add_avaliacao(id_cliente, nota_f, comentario)
+            else:
+                # caso seja dict
+                aval = {
+                    "id_cliente": id_cliente,
+                    "cliente_id": id_cliente,
+                    "nota": float(nota_f),
+                    "comentario": comentario,
+                    "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+                if isinstance(prof, dict):
+                    prof.setdefault("avaliacoes", []).append(aval)
+        except Exception:
             return False
 
-        prof.add_avaliacao(id_cliente, nota_f, comentario)
-        ProfissionalDAO.atualizar(prof)
+        # tenta persistir via DAO, se existir
+        try:
+            ProfissionalDAO.atualizar(prof)
+        except Exception:
+            try:
+                # se for dict/list, persistir manualmente regravando todos
+                ProfissionalDAO.salvar()
+            except Exception:
+                pass
+
         return True
-      except Exception as e:
-        print(f"Erro ao avaliar profissional: {e}")
-        return False
-    
- #   @classmethod
-    #def avaliar_profissional(cls, id_prof, id_cliente, nota, comentario):
-    #   ProfissionalDAO.abrir()  # garante que a lista está carregada
-#
+# ...existing code...
+
+    #@classmethod
+   # def avaliar_profissional(cls, id_prof, id_cliente, nota, comentario):
+   #     ProfissionalDAO.abrir()  # garante que a lista está carregada
+
  #      prof = cls.profissional_listar_id(id_prof)
  #      if not prof:
   #      print(f"[ERRO] Profissional com id={id_prof} não encontrado.")
