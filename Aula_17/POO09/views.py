@@ -245,11 +245,15 @@ class View:
         r.sort(key=lambda obj: obj.get_nome())
         return r
 
+    @staticmethod
     def profissional_autenticar(email, senha):
+      try:
         for p in View.profissional_listar():
             if p.get_email() == email and p.get_senha() == senha:
                 return {"id": p.get_id(), "nome": p.get_nome()}
-        return None
+      except Exception as e:
+        print(f"Erro ao autenticar profissional: {e}")
+      return None
 
     def profissional_inserir(nome, especialidade, conselho, email, senha):
       if not nome or not email or not senha:
@@ -419,36 +423,24 @@ class View:
     # ...existing code...
     @classmethod
     def avaliar_profissional(cls, id_prof, id_cliente, nota, comentario):
-        # validações básicas
-        try:
-            nota_f = float(nota)
-        except Exception:
-            return False
-        if nota_f < 0 or nota_f > 5:
-            return False
-        if not comentario or not comentario.strip():
+      try:
+        nota_f = float(nota)
+        if nota_f < 0 or nota_f > 5 or not comentario.strip():
             return False
 
         prof = cls.profissional_listar_id(id_prof)
         if not prof:
             return False
 
-        avaliacoes = prof.get_avaliacoes() or []
-        # evita avaliação duplicada pelo mesmo cliente
-        if any((av.get("cliente_id") == id_cliente) or (av.get("id_cliente") == id_cliente) for av in avaliacoes):
+        if any(av.get("cliente_id") == id_cliente for av in prof.get_avaliacoes() or []):
             return False
 
-        # adiciona avaliação e persiste (ajuste conforme seu DAO)
         prof.add_avaliacao(id_cliente, nota_f, comentario)
-        try:
-            from models.profissional import ProfissionalDAO
-            ProfissionalDAO.atualizar(prof)
-        except Exception:
-            # se não houver DAO ou falhar, ainda retornamos True se o objeto foi atualizado em memória
-            pass
-
+        ProfissionalDAO.atualizar(prof)
         return True
-# ...existing code...
+      except Exception as e:
+        print(f"Erro ao avaliar profissional: {e}")
+        return False
     
  #   @classmethod
     #def avaliar_profissional(cls, id_prof, id_cliente, nota, comentario):
