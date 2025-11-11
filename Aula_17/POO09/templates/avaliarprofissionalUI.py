@@ -3,6 +3,24 @@ from views import View
 
 class AvaliarProfissionalUI:
     @staticmethod
+    def _try_rerun():
+        """Tenta reiniciar/atualizar a execução de forma compatível com várias versões do Streamlit."""
+        if hasattr(st, "experimental_rerun"):
+            try:
+                st.experimental_rerun()
+                return
+            except Exception:
+                pass
+        if hasattr(st, "rerun"):
+            try:
+                st.rerun()
+                return
+            except Exception:
+                pass
+        # fallback mínimo: marcar flag para indicar que precisa de refresh
+        st.session_state["_needs_rerun"] = True
+
+    @staticmethod
     def _get_prof_id_from_atd(atd):
         if hasattr(atd, "get_id_profissional"):
             return atd.get_id_profissional()
@@ -95,7 +113,9 @@ class AvaliarProfissionalUI:
                 sucesso = View.avaliar_profissional(prof_id, id_cliente, nota, comentario.strip())
                 if sucesso:
                     st.success("Avaliação enviada com sucesso.")
-                    st.experimental_rerun()
+                    # usar wrapper compatível em vez de chamar experimental_rerun direto
+                    AvaliarProfissionalUI._try_rerun()
+                    return
                 else:
                     # tenta identificar motivo comum
                     # se já houver avaliação do cliente, mostrar mensagem específica
