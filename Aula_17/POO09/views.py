@@ -60,46 +60,70 @@ class View:
                 return c
         return None
 
+   # ...existing code...
     @staticmethod
     def alterar_senha_admin(id_admin, nova_senha):
         """
-        Altera a senha do administrador (procura por id). Retorna True se atualizada.
-        Usa ClienteDAO.atualizar para persistir.
+        Altera a senha do(s) administrador(es).
+        Se id_admin for None ou inválido, atualiza todos os registros com email 'admin'.
+        Retorna True se ao menos um registro foi atualizado.
         """
-        if id_admin is None:
-            return False
         try:
-            id_int = int(id_admin)
+            lista = ClienteDAO.listar() or []
         except Exception:
-            return False
+            lista = []
 
+        updated = False
+        # se id_admin é válido, tenta atualizar por id primeiro
         try:
-            admin = ClienteDAO.listar_id(id_int)
+            if id_admin is not None:
+                try:
+                    id_int = int(id_admin)
+                except Exception:
+                    id_int = None
+                if id_int is not None:
+                    for c in lista:
+                        cid = c.get_id() if hasattr(c, "get_id") else c.get("id")
+                        if cid == id_int:
+                            if hasattr(c, "set_senha"):
+                                c.set_senha(nova_senha)
+                            else:
+                                c["senha"] = nova_senha
+                            updated = True
+                            break
         except Exception:
-            # tentar carregar manualmente
-            try:
-                lista = ClienteDAO.listar() or []
-                admin = next((c for c in lista if (c.get_id() if hasattr(c, "get_id") else c.get("id")) == id_int), None)
-            except Exception:
-                admin = None
+            pass
 
-        if not admin:
-            return False
+        # se não atualizou por id, atualiza todos os registros com email 'admin'
+        if not updated:
+            for c in lista:
+                try:
+                    email = c.get_email() if hasattr(c, "get_email") else (c.get("email") if isinstance(c, dict) else None)
+                except Exception:
+                    email = None
+                if email == "admin":
+                    try:
+                        if hasattr(c, "set_senha"):
+                            c.set_senha(nova_senha)
+                        else:
+                            c["senha"] = nova_senha
+                        updated = True
+                    except Exception:
+                        continue
 
-        try:
-            if hasattr(admin, "set_senha"):
-                admin.set_senha(nova_senha)
-            else:
-                admin["senha"] = nova_senha
-            ClienteDAO.atualizar(admin)
-            # garantir gravação
+        if updated:
             try:
+                # persiste alterações
                 ClienteDAO.salvar()
             except Exception:
-                pass
-            return True
-        except Exception:
-            return False
+                try:
+                    # fallback: usar atualizar por objeto
+                    for c in lista:
+                        if hasattr(c, "get_id"):
+                            ClienteDAO.atualizar(c)
+                except Exception:
+                    pass
+        return updated
 # ...existing code...
 
     def cliente_listar():
