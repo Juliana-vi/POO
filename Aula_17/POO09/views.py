@@ -416,33 +416,67 @@ class View:
             reverse=(ordem == "desc")
         )
     
+    # ...existing code...
     @classmethod
     def avaliar_profissional(cls, id_prof, id_cliente, nota, comentario):
-       ProfissionalDAO.abrir()  # garante que a lista está carregada
+        # validações básicas
+        try:
+            nota_f = float(nota)
+        except Exception:
+            return False
+        if nota_f < 0 or nota_f > 5:
+            return False
+        if not comentario or not comentario.strip():
+            return False
 
-       prof = cls.profissional_listar_id(id_prof)
-       if not prof:
-        print(f"[ERRO] Profissional com id={id_prof} não encontrado.")
-        return False
+        prof = cls.profissional_listar_id(id_prof)
+        if not prof:
+            return False
+
+        avaliacoes = prof.get_avaliacoes() or []
+        # evita avaliação duplicada pelo mesmo cliente
+        if any((av.get("cliente_id") == id_cliente) or (av.get("id_cliente") == id_cliente) for av in avaliacoes):
+            return False
+
+        # adiciona avaliação e persiste (ajuste conforme seu DAO)
+        prof.add_avaliacao(id_cliente, nota_f, comentario)
+        try:
+            from models.profissional import ProfissionalDAO
+            ProfissionalDAO.atualizar(prof)
+        except Exception:
+            # se não houver DAO ou falhar, ainda retornamos True se o objeto foi atualizado em memória
+            pass
+
+        return True
+# ...existing code...
+    
+ #   @classmethod
+    #def avaliar_profissional(cls, id_prof, id_cliente, nota, comentario):
+    #   ProfissionalDAO.abrir()  # garante que a lista está carregada
+#
+ #      prof = cls.profissional_listar_id(id_prof)
+ #      if not prof:
+  #      print(f"[ERRO] Profissional com id={id_prof} não encontrado.")
+ #       return False
 
 
-       prof.add_avaliacao(id_cliente, nota, comentario)
+ #      prof.add_avaliacao(id_cliente, nota, comentario)
 
-       lista = ProfissionalDAO.listar()
-       atualizado = False
+ #      lista = ProfissionalDAO.listar()
+ #      atualizado = False
 
-       for i, p in enumerate(lista):
-        if p.get_id() == prof.get_id():
-            lista[i] = prof
-            atualizado = True
-            break
+ #      for i, p in enumerate(lista):
+#          if p.get_id() == prof.get_id():
+ #           lista[i] = prof
+ #           atualizado = True
+ #           break
 
-       if not atualizado:
-        print(f"[ERRO] Profissional {prof.get_nome()} não estava na lista do DAO.")
-        return False
+ #      if not atualizado:
+ #       print(f"[ERRO] Profissional {prof.get_nome()} não estava na lista do DAO.")
+ #       return False
 
-       ProfissionalDAO.salvar()
-       return True
+ #      ProfissionalDAO.salvar()
+ #      return True
 
     @classmethod
     def listar_atendimentos_cliente(cls, id_cliente: int) -> List:

@@ -1,4 +1,5 @@
 import json
+import datetime
 from pathlib import Path
 from typing import List, Dict
 from models.dao import DAO
@@ -30,26 +31,33 @@ class Profissional:
     def set_email(self, email): self.__email = email
     def set_senha(self, senha): self.__senha = senha
 
-    def add_avaliacao(self, cliente_id: int, nota: float, comentario: str):
-      for av in self.__avaliacoes:
-        if av["cliente_id"] == cliente_id:
-            return  # já avaliou, ignora
-      self.__avaliacoes.append({
-        "cliente_id": cliente_id,
-        "nota": nota,
-        "comentario": comentario.strip()
-    })
-      self.__calcular_media()
+    def add_avaliacao(self, id_cliente, nota, comentario):
+        if not hasattr(self, "_avaliacoes") or self._avaliacoes is None:
+            self._avaliacoes = []
+        avaliacao = {
+            "id_cliente": id_cliente,
+            "cliente_id": id_cliente,
+            "nota": float(nota),
+            "comentario": comentario,
+            "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        self._avaliacoes.append(avaliacao)
+        self._recalcular_media()
 
+    def get_avaliacoes(self):
+        return getattr(self, "_avaliacoes", []) or []
 
-    def __calcular_media(self):
-        if not self.__avaliacoes:
-            self.__media_avaliacoes = 0.0
-        else:
-            self.__media_avaliacoes = sum(av["nota"] for av in self.__avaliacoes) / len(self.__avaliacoes)
+    def _recalcular_media(self):
+        avals = self.get_avaliacoes()
+        if not avals:
+            self._media_avaliacoes = 0.0
+            return
+        total = sum(float(a.get("nota", 0)) for a in avals)
+        self._media_avaliacoes = total / len(avals)
 
-    def get_avaliacoes(self): return self.__avaliacoes
-    def get_media_avaliacoes(self): return self.__media_avaliacoes
+    def get_media_avaliacoes(self):
+        return getattr(self, "_media_avaliacoes", 0.0)
+# ...existing code...
 
     def to_json(self):
         return {
