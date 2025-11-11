@@ -20,6 +20,22 @@
     "media_avaliacoes": 0.0
   },
   {
+    "id": 3,
+    "nome": "dani",
+    "especialidade": "professora",
+    "conselho": "design",
+    "email": "dani@gmail.com",
+    "senha": "dani",
+    "avaliacoes": [
+      {
+        "cliente_id": 7,
+        "nota": 5.0,
+        "comentario": "Muito atenciosa e simpática! Além de muito responsável."
+      }
+    ],
+    "media_avaliacoes": 5.0
+  },
+  {
     "id": 4,
     "nome": "Ana Flávia",
     "especialidade": "Professora",
@@ -31,6 +47,20 @@
         "cliente_id": 36,
         "nota": 5.0,
         "comentario": "Profissional excelente. Recomendo para todos."
+      },
+      {
+        "id_cliente": 22,
+        "cliente_id": 22,
+        "nota": 5.0,
+        "comentario": "Ótima profissional. Recomendo muito!",
+        "data": "2025-11-11 12:03:44"
+      },
+      {
+        "id_cliente": 7,
+        "cliente_id": 7,
+        "nota": 5.0,
+        "comentario": "Gostei muito dela!",
+        "data": "2025-11-11 12:44:08"
       }
     ],
     "media_avaliacoes": 5.0
@@ -57,24 +87,15 @@
         "cliente_id": 5,
         "nota": 5.0,
         "comentario": "Boa profissional"
-      }
-    ],
-    "media_avaliacoes": 4.833333333333333
-  },
-  {
-    "id": 3,
-    "nome": "dani",
-    "especialidade": "professora",
-    "conselho": "design",
-    "email": "dani@gmail.com",
-    "senha": "dani",
-    "avaliacoes": [
+      },
       {
+        "id_cliente": 7,
         "cliente_id": 7,
-        "nota": 5.0,
-        "comentario": "Muito atenciosa e simpática! Além de muito responsável."
+        "nota": 3.0,
+        "comentario": "Achei muito incompetente!",
+        "data": "2025-11-11 12:45:42"
       }
     ],
-    "media_avaliacoes": 5.0
+    "media_avaliacoes": 4.375
   }
 ]

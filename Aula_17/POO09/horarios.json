@@ -1688,14 +1688,6 @@
     "id_profissional": 3
   },
   {
-    "id": 222,
-    "data": "30/10/2025 02:00",
-    "confirmado": false,
-    "id_cliente": null,
-    "id_servico": null,
-    "id_profissional": 6
-  },
-  {
     "id": 223,
     "data": "30/10/2025 02:30",
     "confirmado": false,
@@ -1806,5 +1798,13 @@
     "id_cliente": 7,
     "id_servico": 5,
     "id_profissional": 3
+  },
+  {
+    "id": 222,
+    "data": "30/10/2025 02:00",
+    "confirmado": true,
+    "id_cliente": 7,
+    "id_servico": 8,
+    "id_profissional": 6
   }
 ]
